@@ -40,6 +40,7 @@ Argoverse trained Transformer based model is at:  https://data.vision.ee.ethz.ch
 ## Extracted Minimal-Cycles
 
 Nuscenes : https://data.vision.ee.ethz.ch/cany/TPLR/poly-dicts/nusc-polygon-dicts.zip
+
 Argoverse : https://data.vision.ee.ethz.ch/cany/TPLR/poly-dicts/argo-polygon-dicts.zip
 
 ## Metrics
