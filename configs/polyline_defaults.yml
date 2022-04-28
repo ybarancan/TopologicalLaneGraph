@@ -1,0 +1,130 @@
+
+### DATA RELATED STUFF
+
+
+use_dgx: False
+
+logdir: /cluster/work/cvl/cany/TPLR
+
+train_dataset: nuscenes
+nusc_root: /cluster/scratch/cany/nuScenes
+nuscenes_version: v1.0-trainval
+
+
+line_label_root: /cluster/scratch/cany/nuscenes_stuff/cany/lanelines/lines
+vis_label_root: /cluster/scratch/cany/nuscenes_stuff/cany/lanelines/segment
+
+
+seg_label_root: /cluster/scratch/cany/nuscenes_stuff/cany/monomaps_labels_vanilla
+static_label_root: /cluster/scratch/cany/nuscenes_stuff/cany/bev_labels
+
+num_class: 14
+num_bev_classes: 14
+       
+
+loc_dict_path: /cluster/work/cvl/cany/lanefinder/vis_loc_dict.npy
+obj_dict_path: /cluster/work/cvl/cany/lanefinder/obj_dict.npy
+        
+poly_dict_path: '/cluster/work/cvl/cany/TPLR-dicts/gt_total_train_dict.npy'
+poly_pretrain_poly_dict_path: '/cluster/work/cvl/cany/TPLR-dicts/estimate_total_train_dict.npy'
+valid_poly_dict_path: '/cluster/work/cvl/cany/TPLR-dicts/valid_polygon_dict.npy'
+ 
+val_poly_pretrain_poly_dict_path: '/cluster/work/cvl/cany/TPLR-dicts/val_estimate_total_train_dict.npy'
+ 
+ 
+poly_base_path: /cluster/work/cvl/cany/TPLR-dicts
+ 
+# poly_base_path: /cluster/work/cvl/cany/TPLR      
+load_pretrained_backbone: False
+backbone_ckpt_path: /cluster/work/cvl/cany/lanefinder/deeplab_model.pth
+load_original_ckpt: False
+
+ 
+cam_matrix_dict_path: /cluster/work/cvl/cany/lanefinder/camera_matrix_dict.npy
+intrinsic_dict_path: /cluster/work/cvl/cany/lanefinder/intrinsic_dict.npy        
+     
+zoom_sampling_dict_path: /cluster/work/cvl/cany/lanefinder/zoom_sampling_dict.npy
+        
+max_interval_between_frames: 5
+
+apply_focal: False
+
+crop_lines: True
+delete_lines: False
+
+# Name of split used for training
+train_split: train
+
+# Name of split used for validation
+val_split: val
+
+# Root data directory 
+
+orig_img_size: [1600, 1200]
+img_size: [800, 448]
+patch_size: [800, 448]
+
+down_image_size: [50, 28]
+# Hold out portion of train data to calibrate on
+hold_out_calibration: False
+### Training options ###
+
+# IDs of GPUs to use during training
+gpus: [0]
+gpuwise_loss: False
+# Number of examples per mini-batch
+batch_size: 1
+
+num_frames: 4
+
+# Number of dataloader threads
+num_workers: 2
+
+# Learning rate
+learning_rate: 0.1
+
+# Decay learning rate by a factor 10 after the following number of epochs
+lr_milestones: [150, 185]
+
+# Weight decay
+weight_decay: 0.0001
+
+# Number of epochs to train for
+num_epochs: 200
+
+# Log loss to tensorboard every N iterations
+log_interval: 10000
+
+# Visualise predictions every N iterations
+vis_interval: 10000
+stats_interval: 2000
+reset_confusion_interval: 20000
+# Loss function
+loss_fn: bce
+
+# Focal loss parameters
+focal:
+  alpha: 0.5
+  gamma: 2
+
+tfm_channels: 64
+ymin: -2
+ymax: 4
+focal_length: 1260.
+# Threshold to treat prediction as positive
+score_thresh: 0.5
+
+model: base_stm
+pattern_memory: True
+lipschitz: False
+
+map_extents: [-25., 1., 25., 50.]
+
+# Spacing between adjacent grid cells in the map, in meters
+map_resolution: 0.25
+
+zoom_augment_prob: 0.4
+
+rnn_size: [49,50]
+
+polyrnn_feat_side: 50

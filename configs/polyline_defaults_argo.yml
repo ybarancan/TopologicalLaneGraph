@@ -1,0 +1,121 @@
+
+### DATA RELATED STUFF
+
+use_dgx: False
+
+logdir: /scratch_net/catweazle/cany/TPLR
+
+train_dataset: ãrgoverse
+nusc_root: /srv/beegfs02/scratch/tracezuerich/data/datasets/Argoverse_v2
+nuscenes_version: v1.0-trainval
+line_label_root: /srv/beegfs02/scratch/tracezuerich/data/cany/lanelines/lines
+vis_label_root: /srv/beegfs02/scratch/tracezuerich/data/cany/lanelines/segment
+#vis_label_root: /srv/beegfs02/scratch/tracezuerich/data/cany/lanelines/segment
+
+seg_label_root: /srv/beegfs02/scratch/tracezuerich/data/cany/monomaps_labels_vanilla
+static_label_root: /srv/beegfs02/scratch/tracezuerich/data/cany/bev_labels
+
+num_class: 14
+num_bev_classes: 14
+     
+       
+load_pretrained_backbone: False
+backbone_ckpt_path: /scratch_net/catweazle/cany/pretrained_ckpts/cityscapes_deeplab_v3_plus/model.pth
+load_original_ckpt: False
+
+poly_base_path: '/scratch_net/catweazle/cany/TPLR_argo/argo-polygon-dicts'
+
+loc_dict_path: /scratch_net/catweazle/cany/lanefinder/vis_loc_dict.npy
+obj_dict_path: /scratch_net/catweazle/cany/lanefinder/obj_dict.npy
+        
+ 
+cam_matrix_dict_path: /scratch_net/catweazle/cany/lanefinder/camera_matrix_dict.npy
+intrinsic_dict_path: /scratch_net/catweazle/cany/lanefinder/intrinsic_dict.npy        
+     
+zoom_sampling_dict_path: /scratch_net/catweazle/cany/lanefinder/zoom_sampling_dict.npy
+        
+max_interval_between_frames: 5
+
+apply_focal: False
+
+crop_lines: True
+delete_lines: False
+
+# Name of split used for training
+train_split: train
+
+# Name of split used for validation
+val_split: val
+
+# Root data directory 
+
+image_size: [800, 448]
+orig_img_size: [1600, 1200]
+img_size: [800, 448]
+patch_size: [800, 448]
+
+down_image_size: [50, 28]
+# Hold out portion of train data to calibrate on
+hold_out_calibration: False
+### Training options ###
+
+# IDs of GPUs to use during training
+gpus: [0]
+gpuwise_loss: False
+# Number of examples per mini-batch
+batch_size: 1
+
+num_frames: 4
+
+# Number of dataloader threads
+num_workers: 2
+
+# Learning rate
+learning_rate: 0.1
+
+# Decay learning rate by a factor 10 after the following number of epochs
+lr_milestones: [150, 185]
+
+# Weight decay
+weight_decay: 0.0001
+
+# Number of epochs to train for
+num_epochs: 200
+
+# Log loss to tensorboard every N iterations
+log_interval: 1000
+
+# Visualise predictions every N iterations
+vis_interval: 1000
+stats_interval: 10
+reset_confusion_interval: 2000
+# Loss function
+loss_fn: bce
+
+# Focal loss parameters
+focal:
+  alpha: 0.5
+  gamma: 2
+
+tfm_channels: 64
+ymin: -2
+ymax: 4
+focal_length: 1260.
+# Threshold to treat prediction as positive
+score_thresh: 0.5
+
+model: base_stm
+pattern_memory: True
+lipschitz: False
+
+map_extents: [-25., 1., 25., 50.]
+
+# Spacing between adjacent grid cells in the map, in meters
+map_resolution: 0.25
+resolution: 0.25
+
+zoom_augment_prob: 0.4
+
+rnn_size: [49,50]
+
+polyrnn_feat_side: 50
