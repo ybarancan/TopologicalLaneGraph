@@ -26,7 +26,9 @@ def evaluate(dataloader, model, criterion, postprocessors, confusion, config,arg
      model.eval()
    
      criterion.eval()
-     
+     my_save_list_prob = dict()
+    
+     my_save_list_coef = dict()
      logging.error('VALIDATION')
      # Iterate over dataset
      for i, batch in enumerate(tqdm(dataloader)):
@@ -67,7 +69,11 @@ def evaluate(dataloader, model, criterion, postprocessors, confusion, config,arg
         
         outputs = model(seq_images,cuda_targets[0]['calib'], targets[0]['left_traffic'])
         
-    
+        my_save_list_prob[targets[0]['sample_token']] = outputs['pred_logits'].cpu().detach().numpy()
+        # my_save_list_prob.append(outputs['pred_logits'].cpu().detach().numpy())
+        my_save_list_coef[targets[0]['sample_token']] = outputs['pred_boxes'].cpu().detach().numpy()
+        
+        
         global_thresh = thresh
         threshed_outputs = model.thresh_and_assoc_estimates(outputs,thresh=global_thresh)
         base_postprocessed = postprocessors['bbox'](threshed_outputs,torch.Tensor(np.tile(np.expand_dims(np.array(config.patch_size),axis=0),[seq_images.shape[0],1])).cuda(),objects=False)
@@ -77,9 +83,9 @@ def evaluate(dataloader, model, criterion, postprocessors, confusion, config,arg
         
         out = vis_tools.get_selected_estimates(base_postprocessed , outputs, thresh = global_thresh, do_polygons=True)
         
-        poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots = vis_tools.get_polygons(base_postprocessed, global_thresh)
-
-        out[0]['my_blob_mat'] = blob_mat
+#        poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots = vis_tools.get_polygons(base_postprocessed, global_thresh)
+#
+#        out[0]['my_blob_mat'] = blob_mat
   
         match_static_indices,  match_poly_indices = criterion.matcher(outputs, cuda_targets, do_polygons=False)
         
@@ -92,9 +98,9 @@ def evaluate(dataloader, model, criterion, postprocessors, confusion, config,arg
         merged_hausdorff_static_dist, merged_hausdorff_static_idx, merged_res_interpolated = vis_tools.merged_hausdorff_match(out[0], targets[0])
         
         try:
-            poly_stuff=(poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots)
-#            poly_stuff=(None, None,None,None,None)
-            confusion.update(out[0], static_inter_dict, hausdorff_gt, hausdorff_static_idx,  merged_hausdorff_static_idx, static_idx, static_target_ids, targets[0], poly_stuff=poly_stuff,do_common_poly = True, do_polys=True)
+#            poly_stuff=(poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots)
+            poly_stuff=(None, None,None,None,None)
+            confusion.update(out[0], static_inter_dict, hausdorff_gt, hausdorff_static_idx,  merged_hausdorff_static_idx, static_idx, static_target_ids, targets[0], poly_stuff=poly_stuff,do_common_poly = False, do_polys=False)
 
         except Exception as e:
             logging.error('EXCEPTION IN CONFUSION ')
@@ -104,6 +110,8 @@ def evaluate(dataloader, model, criterion, postprocessors, confusion, config,arg
             # vis_tools.save_results_eval(seq_images.cpu().numpy(),outputs,  out[0], match_poly_indices, targets, static_inter_dict,None, static_target_ids, None, config,
             #                             metric_visuals=None, common_poly=poly_stuff)
     
+     np.save('/cluster/work/cvl/cany/simplice/train_simplice_est_prob.npy', my_save_list_prob)
+     np.save('/cluster/work/cvl/cany/simplice/train_simplice_est_coef.npy', my_save_list_coef)
      return confusion
 
 
@@ -419,11 +427,16 @@ def main():
     model.to(device)
     
    
-    train_loader,train_dataset, val_loader, val_dataset = data_factory.build_nuscenes_dataloader(config, args, val=True)
+    train_loader,train_dataset, val_loader, val_dataset = data_factory.build_nuscenes_dataloader(config, args, val=False)
 
     epoch, best_iou, iteration = load_checkpoint(os.path.join(base_dir,'final_ckpts', 'TR_MC_Nusc.pth'),
                                   model)
     
+    logging.error('LEN TRAIN LOADER')
+    logging.error(len(train_dataset))
+    
+    logging.error('LEN VAL LOADER')
+    logging.error(len(val_dataset))
   
     logging.error('LOADED MY CHECKPOINT')
 
@@ -434,7 +447,7 @@ def main():
 
 
     valc = BinaryConfusionMatrix()
-    val_con = evaluate(val_loader, model, criterion, postprocessors,valc, config, args, thresh)
+    val_con = evaluate(train_loader, model, criterion, postprocessors,valc, config, args, thresh)
     
     
     static_res_dict = val_con.get_res_dict

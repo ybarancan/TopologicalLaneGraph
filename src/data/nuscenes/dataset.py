@@ -14,7 +14,7 @@ from src.data.nuscenes import utils as nusc_utils
 from src.data import utils as vis_utils
 from skimage import measure
 #from scipy.ndimage import gaussian_filter
-
+import sys
 import numpy as np
 import scipy.interpolate as si 
 # from scipy.interpolate import UnivariateSpline
@@ -228,34 +228,37 @@ class NuScenesMapDataset(Dataset):
             
             start_con_matrix, fin_con_matrix = self.get_start_fin_con(endpoints)
             target = dict()
-            try:
-                
-                if self.gt_polygon_extraction:
-                    poly_centers, poly_one_hots, blob_mat, blob_ids = self.get_polygons(orig_img_centers, roads)
-                
-                else:
-                    blob_mat, poly_centers, poly_one_hots, blob_ids = self.gt_poly_dict[token]
-                
-                if np.any(blob_mat == None):
-                    return (None, dict(), True)
-                
-
-                
-            except Exception as e:
-                logging.error('GT POLYGON EXCEPTION : ' + str(e))
-                
+#            try:
+#                
+#                if self.gt_polygon_extraction:
+#                    poly_centers, poly_one_hots, blob_mat, blob_ids = self.get_polygons(orig_img_centers, roads)
+#                
+#                else:
+#                    blob_mat, poly_centers, poly_one_hots, blob_ids = self.gt_poly_dict[token]
+#                
+#                if np.any(blob_mat == None):
+#                    return (None, dict(), True)
+#                
+#
+#                
+#            except Exception as e:
+#                logging.error('GT POLYGON EXCEPTION : ' + str(e))
+#                
          
             
             intersections = self.get_order_labels(coeffs)
             
             target['gt_order_labels'] = torch.tensor(intersections).long()
             
-            target['blob_ids'] = torch.tensor(blob_ids).long()
-            target['blob_mat'] = torch.tensor(blob_mat).long()
-            target['poly_one_hots'] = torch.tensor(poly_one_hots).float()
-            target['poly_centers'] = torch.tensor(poly_centers).float()
+#            target['blob_ids'] = torch.tensor(blob_ids).long()
+#            target['blob_mat'] = torch.tensor(blob_mat).long()
+#            target['poly_one_hots'] = torch.tensor(poly_one_hots).float()
+#            target['poly_centers'] = torch.tensor(poly_centers).float()
             
-
+            target['blob_ids'] = torch.tensor(0).long()
+            target['blob_mat'] = torch.tensor(0).long()
+            target['poly_one_hots'] =  torch.tensor(0).long()
+            target['poly_centers'] =  torch.tensor(0).long()
             
             target['calib'] = calib
             target['center_img'] = to_return_centers
@@ -297,7 +300,10 @@ class NuScenesMapDataset(Dataset):
         
         except Exception as e:
             logging.error('NUSC DATALOADER ' + str(e))
-            
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            logging.error(str((exc_type, fname, exc_tb.tb_lineno)))
+       
             return (None, dict(), True)
         
         
@@ -707,257 +713,271 @@ class NuScenesMapDataset(Dataset):
     
     def load_line_labels(self, token, augment, beta):
         
-        sample_data = self.nuscenes.get('sample_data', token)
-        sensor = self.nuscenes.get(
-        'calibrated_sensor', sample_data['calibrated_sensor_token'])
-        intrinsics = np.array(sensor['camera_intrinsic'])
+        try:
     
-        sample_token = sample_data['sample_token']
-#        logging.error('SAMPLE TOKEN ' + sample_token)
-        sample = self.nuscenes.get('sample', sample_token)
-        scene_token = sample['scene_token']
+            sample_data = self.nuscenes.get('sample_data', token)
+            sensor = self.nuscenes.get(
+            'calibrated_sensor', sample_data['calibrated_sensor_token'])
+            intrinsics = np.array(sensor['camera_intrinsic'])
         
-#        logging.error('SCENE TOKEN ' + scene_token)
-        scene = self.nuscenes.get('scene', scene_token)
-#        logging.error('SCENE OBTAINED')
-        log = self.nuscenes.get('log', scene['log_token'])
-        
-#        scene_map_api = self.map_apis[log['location']]
-        # Load label image as a torch tensor
-        label_path = os.path.join(self.line_label_root, token + '.png')
-        # logging.error('PATH ' + str(label_path))
-        orig_img_centers = cv2.imread(label_path, cv2.IMREAD_UNCHANGED )
-        
-        # logging.error('IMG CENTERS '+ str(img_centers.shape) + ' , ' + str(img_centers.dtype))
-        # logging.error('ROADS '+ str(np.unique(img_centers)))
-#
-        
-        
-        
-#        occ_labels = self.load_seg_labels(token, scene_token)
-        # vis_labels, bev_labels, static_labels = self.load_seg_labels(token, scene_token)
-        # np_mask = vis_labels.numpy()
-        
-        # vis_mask = np_mask[0]
-        # vis_mask = np.array(Image.open('/cluster/home/cany/simplice-net/bev_mask.png'),np.uint8)
-        # vis_mask = np.float32(vis_mask > 0)
-        # vis_labels = np.stack([vis_mask, vis_mask],axis=0)
-        # vis_labels = torch.tensor(vis_labels)
-        
-        vis_mask = vis_utils.get_visible_mask(intrinsics, sample_data['width'], 
-                                  self.config.map_extents, self.config.map_resolution)
-        vis_mask = np.flipud(vis_mask)
-        vis_labels = np.stack([vis_mask, vis_mask],axis=0)
-        vis_labels = torch.tensor(vis_labels)
-        
-        occ_labels = torch.tensor(np.zeros_like(vis_mask))
-        
-        # tot_mask = (1-occ_mask)*vis_mask
-        
-        
-       
-        
-        if augment:
+            sample_token = sample_data['sample_token']
+    #        logging.error('SAMPLE TOKEN ' + sample_token)
+            sample = self.nuscenes.get('sample', sample_token)
+            scene_token = sample['scene_token']
             
-            orig_img_centers, trans_endpoints = nusc_utils.get_moved_centerlines(self.nuscenes, self.all_discretized_centers[log['location']], sample_data, self.extents, self.resolution, vis_mask,beta,orig_img_centers)
-            orig_img_centers = np.flipud(orig_img_centers)
+    #        logging.error('SCENE TOKEN ' + scene_token)
+            scene = self.nuscenes.get('scene', scene_token)
+    #        logging.error('SCENE OBTAINED')
+            log = self.nuscenes.get('log', scene['log_token'])
             
-            # logging.error('AUGMENT PASSED ')
+    #        scene_map_api = self.map_apis[log['location']]
+            # Load label image as a torch tensor
+            label_path = os.path.join(self.line_label_root, token + '.png')
+            # logging.error('PATH ' + str(label_path))
+            orig_img_centers = cv2.imread(label_path, cv2.IMREAD_UNCHANGED )
             
-        # obj_to_return, center_width_orient, obj_exists = self.get_object_params(token,vis_mask,beta,augment)
-        
-        
-        img_centers = orig_img_centers*np.uint16(vis_mask)
-        
-        roads = np.unique(img_centers)[1:]
-    
-#        logging.error('ROADS ' + str(roads))
-#        all_lines_tokens = self.lines_dict[log['location']]
-            
-        outgoings = []
-        incomings = []
-        coeffs_list = []
-        to_remove=[]
-        dilated_list=[]
-        smoothed = []
-        origs = []
-#        starts = []
-        endpoints = []
-        
-        
-        singapore = 'singapore' in log['location']
-        
-        for k in range(len(roads)):
-            
-            sel = img_centers == roads[k]
+            # logging.error('IMG CENTERS '+ str(img_centers.shape) + ' , ' + str(img_centers.dtype))
+            # logging.error('ROADS '+ str(np.unique(img_centers)))
+    #
             
             
             
-            locs = np.where(sel)
+    #        occ_labels = self.load_seg_labels(token, scene_token)
+            # vis_labels, bev_labels, static_labels = self.load_seg_labels(token, scene_token)
+            # np_mask = vis_labels.numpy()
+            
+            # vis_mask = np_mask[0]
+            # vis_mask = np.array(Image.open('/cluster/home/cany/simplice-net/bev_mask.png'),np.uint8)
+            # vis_mask = np.float32(vis_mask > 0)
+            # vis_labels = np.stack([vis_mask, vis_mask],axis=0)
+            # vis_labels = torch.tensor(vis_labels)
+            
+            vis_mask = vis_utils.get_visible_mask(intrinsics, sample_data['width'], 
+                                      self.config.map_extents, self.config.map_resolution)
+            vis_mask = np.flipud(vis_mask)
+            vis_labels = np.stack([vis_mask, vis_mask],axis=0)
+            vis_labels = torch.tensor(vis_labels)
+            
+            occ_labels = torch.tensor(np.zeros_like(vis_mask))
+            
+            # tot_mask = (1-occ_mask)*vis_mask
             
             
-            
-            # logging.error('LOCS OBTAINED')
-            
-            # sorted_x, sorted_y = zip(*sorted(zip(list(locs[1]),list(locs[0]))))
-            sorted_x = locs[1]/img_centers.shape[1]
-            sorted_y = locs[0]/img_centers.shape[0]
-            # my_x = []
-            # my_y = []
-            # for m in range(len(sorted_x)):
-            #     if sorted_x[m] not in my_x:
-            #         my_x.append(sorted_x[m]/img_centers.shape[1])
-            #         my_y.append(sorted_y[m]/img_centers.shape[0])
-            
-            # logging.error('LOCS REMOVED DUPLICATES')
-            
-            if len(sorted_x) < 10:
-                to_remove.append(roads[k])   
-                continue
+           
             
             if augment:
-                inc, out, endpoint, endpoint_id = self.get_line_orientation(token,roads[k],img_centers,log['location'],vis_mask,custom_endpoints=trans_endpoints, augment=True)
-            else:
-                inc, out, endpoint, endpoint_id = self.get_line_orientation(token,roads[k],img_centers,log['location'],vis_mask,custom_endpoints=None, augment=False)
-            
-            if len(endpoint) == 0:
-                continue
-            
-            
-            reshaped_endpoint = np.reshape(endpoint,(-1))
-            endpoints.append(reshaped_endpoint)
-            incomings.append(inc)
-            outgoings.append(out)
+                
+                orig_img_centers, trans_endpoints = nusc_utils.get_moved_centerlines(self.nuscenes, self.all_discretized_centers[log['location']], sample_data, self.extents, self.resolution, vis_mask,beta,orig_img_centers)
+                orig_img_centers = np.flipud(orig_img_centers)
+                
+                # logging.error('AUGMENT PASSED ')
+                
+            # obj_to_return, center_width_orient, obj_exists = self.get_object_params(token,vis_mask,beta,augment)
             
             
+            img_centers = orig_img_centers*np.uint16(vis_mask)
             
-            points = np.array(list(zip(sorted_x,sorted_y)))
-            res = bezier.fit_bezier(points, self.n_control)[0]
+            roads = np.unique(img_centers)[1:]
+        
+    #        logging.error('ROADS ' + str(roads))
+    #        all_lines_tokens = self.lines_dict[log['location']]
+                
+            outgoings = []
+            incomings = []
+            coeffs_list = []
+            to_remove=[]
+            dilated_list=[]
+            smoothed = []
+            origs = []
+    #        starts = []
+            endpoints = []
             
-#            logging.error('RES ' + str(res))
-#            logging.error('ENDPOINT  ' + str(endpoint))
             
+            singapore = 'singapore' in log['location']
             
-            start_res = res[0]
-            end_res = res[-1]
-            
-#            tol = 0.001
-            
-            
-            first_diff = (np.sum(np.square(start_res - endpoint[0])) ) + (np.sum(np.square(end_res - endpoint[1])))
-            second_diff = (np.sum(np.square(start_res - endpoint[1])) ) + (np.sum(np.square(end_res - endpoint[0])))
-            if first_diff <= second_diff:
-                fin_res = res
-            else:
-                fin_res = np.zeros_like(res)
-                for k in range(len(res)):
-                    fin_res[len(res) - k - 1] = res[k]
+            for k in range(len(roads)):
+                
+                sel = img_centers == roads[k]
+                
+                
+                
+                locs = np.where(sel)
+                
+                
+                
+                # logging.error('LOCS OBTAINED')
+                
+                # sorted_x, sorted_y = zip(*sorted(zip(list(locs[1]),list(locs[0]))))
+                sorted_x = locs[1]/img_centers.shape[1]
+                sorted_y = locs[0]/img_centers.shape[0]
+                # my_x = []
+                # my_y = []
+                # for m in range(len(sorted_x)):
+                #     if sorted_x[m] not in my_x:
+                #         my_x.append(sorted_x[m]/img_centers.shape[1])
+                #         my_y.append(sorted_y[m]/img_centers.shape[0])
+                
+                # logging.error('LOCS REMOVED DUPLICATES')
+                
+                if len(sorted_x) < 10:
+                    to_remove.append(roads[k])   
+                    continue
+                
+                if augment:
+                    inc, out, endpoint, endpoint_id = self.get_line_orientation(token,roads[k],img_centers,log['location'],vis_mask,custom_endpoints=trans_endpoints, augment=True)
+                else:
+                    inc, out, endpoint, endpoint_id = self.get_line_orientation(token,roads[k],img_centers,log['location'],vis_mask,custom_endpoints=None, augment=False)
+                
+                if len(endpoint) == 0:
+                    continue
+                
+                
+                reshaped_endpoint = np.reshape(endpoint,(-1))
+                endpoints.append(reshaped_endpoint)
+                incomings.append(inc)
+                outgoings.append(out)
+                
+                
+                
+                points = np.array(list(zip(sorted_x,sorted_y)))
+                res = bezier.fit_bezier(points, self.n_control)[0]
+                
+    #            logging.error('RES ' + str(res))
+    #            logging.error('ENDPOINT  ' + str(endpoint))
+                
+                
+                start_res = res[0]
+                end_res = res[-1]
+                
+    #            tol = 0.001
+                
+                
+                first_diff = (np.sum(np.square(start_res - endpoint[0])) ) + (np.sum(np.square(end_res - endpoint[1])))
+                second_diff = (np.sum(np.square(start_res - endpoint[1])) ) + (np.sum(np.square(end_res - endpoint[0])))
+                if first_diff <= second_diff:
+                    fin_res = res
+                else:
+                    fin_res = np.zeros_like(res)
+                    for k in range(len(res)):
+                        fin_res[len(res) - k - 1] = res[k]
+                        
+                fin_res = np.clip(fin_res,0,1)
+                
+    #            if (np.sum(np.square(start_res - endpoint[0])) <= tol) & (np.sum(np.square(end_res - endpoint[1])) <= tol):
+    #                fin_res = res
+    #            elif (np.sum(np.square(start_res - endpoint[1])) <= tol) & (np.sum(np.square(end_res - endpoint[0])) <= tol):
+    #                fin_res = np.zeros_like(res)
+    #                for k in range(len(res)):
+    #                    fin_res[len(res) - k - 1] = res[k]
+    #            elif (np.sum(np.square(end_res - endpoint[0])) < tol)& (np.sum(np.square(start_res - endpoint[1])) > tol):
+    #                    logging.error('SOMETHING WRONG 1')
+    #                    logging.error('RES ' + str(res))
+    #                    logging.error('ENDPOINT  ' + str(endpoint))
+    #                    fin_res = res
+    #            elif (np.sum(np.square(start_res - endpoint[0])) > tol)& (np.sum(np.square(end_res - endpoint[1])) < tol):
+    #                logging.error('SOMETHING WRONG 2')
+    #                logging.error('RES ' + str(res))
+    #                logging.error('ENDPOINT  ' + str(endpoint))
+    #                fin_res = res
+    #       
+    #                
+    #            else:
+    #                logging.error('WTF')
+    #                fin_res = res
+                # logging.error('RES ' + str(res))
+                # spl = UnivariateSpline(my_x, my_y)
+                # coeffs = spl.get_knots()
+                coeffs_list.append(np.reshape(np.float32(fin_res),(-1)))
+            #    
+                # logging.error('COEFFS OBTAINED ' + str(coeffs))
+    #            logging.error('SEL ' + str(sel.shape))
+                dilated = ndimage.binary_dilation(sel, structure=self.struct)
+    #            logging.error('BASE DILATED ' + str(dilated.shape))
+                dilated_list.append(np.copy(dilated))
+                sel = np.float32(sel)
+                gau = gaussian_filter(sel, sigma=2)
+                
+                smoothed.append(gau)
+                
+                origs.append(sel)
+    #            sel = sel/np.max(sel)
                     
-            fin_res = np.clip(fin_res,0,1)
-            
-#            if (np.sum(np.square(start_res - endpoint[0])) <= tol) & (np.sum(np.square(end_res - endpoint[1])) <= tol):
-#                fin_res = res
-#            elif (np.sum(np.square(start_res - endpoint[1])) <= tol) & (np.sum(np.square(end_res - endpoint[0])) <= tol):
-#                fin_res = np.zeros_like(res)
-#                for k in range(len(res)):
-#                    fin_res[len(res) - k - 1] = res[k]
-#            elif (np.sum(np.square(end_res - endpoint[0])) < tol)& (np.sum(np.square(start_res - endpoint[1])) > tol):
-#                    logging.error('SOMETHING WRONG 1')
-#                    logging.error('RES ' + str(res))
-#                    logging.error('ENDPOINT  ' + str(endpoint))
-#                    fin_res = res
-#            elif (np.sum(np.square(start_res - endpoint[0])) > tol)& (np.sum(np.square(end_res - endpoint[1])) < tol):
-#                logging.error('SOMETHING WRONG 2')
-#                logging.error('RES ' + str(res))
-#                logging.error('ENDPOINT  ' + str(endpoint))
-#                fin_res = res
-#       
-#                
-#            else:
-#                logging.error('WTF')
-#                fin_res = res
-            # logging.error('RES ' + str(res))
-            # spl = UnivariateSpline(my_x, my_y)
-            # coeffs = spl.get_knots()
-            coeffs_list.append(np.reshape(np.float32(fin_res),(-1)))
-        #    
-            # logging.error('COEFFS OBTAINED ' + str(coeffs))
-#            logging.error('SEL ' + str(sel.shape))
-            dilated = ndimage.binary_dilation(sel, structure=self.struct)
-#            logging.error('BASE DILATED ' + str(dilated.shape))
-            dilated_list.append(np.copy(dilated))
-            sel = np.float32(sel)
-            gau = gaussian_filter(sel, sigma=2)
-            
-            smoothed.append(gau)
-            
-            origs.append(sel)
-#            sel = sel/np.max(sel)
                 
-            
-#             token = all_lines_tokens[roads[k]-1]
-# #            logging.error('TOKEN ' + token)
-#             outgoing_token = scene_map_api.get_outgoing_lane_ids(token)
-#             outgoing_id = []
-#             for tok in outgoing_token:
-# #                logging.error('OUTGOING ' + tok)
-#                 outgoing_id.append(all_lines_tokens.index(tok))
-            
-#             incoming_token = scene_map_api.get_incoming_lane_ids(token)
-#             incoming_id = []
-#             for tok in incoming_token:
-# #                logging.error('INCOMING ' + tok)
-#                 incoming_id.append(all_lines_tokens.index(tok))
-            
-            
-#             outgoings.append(np.array(outgoing_id))
-#             incomings.append(np.array(incoming_id))
-            
-#        logging.error('TOM REMOVE')
-        if len(to_remove) > 0:
-#            logging.error('TO REMOVE ' + str(to_remove))
-            roads = list(roads)
-            
-            for k in to_remove:
-                img_centers[img_centers == k] = 0
+    #             token = all_lines_tokens[roads[k]-1]
+    # #            logging.error('TOKEN ' + token)
+    #             outgoing_token = scene_map_api.get_outgoing_lane_ids(token)
+    #             outgoing_id = []
+    #             for tok in outgoing_token:
+    # #                logging.error('OUTGOING ' + tok)
+    #                 outgoing_id.append(all_lines_tokens.index(tok))
                 
-                roads.remove(k)
+    #             incoming_token = scene_map_api.get_incoming_lane_ids(token)
+    #             incoming_id = []
+    #             for tok in incoming_token:
+    # #                logging.error('INCOMING ' + tok)
+    #                 incoming_id.append(all_lines_tokens.index(tok))
                 
-#            roads = list(set(roads) - set(to_remove))
+                
+    #             outgoings.append(np.array(outgoing_id))
+    #             incomings.append(np.array(incoming_id))
+                
+    #        logging.error('TOM REMOVE')
+            if len(to_remove) > 0:
+    #            logging.error('TO REMOVE ' + str(to_remove))
+                roads = list(roads)
+                
+                for k in to_remove:
+                    img_centers[img_centers == k] = 0
+                    
+                    roads.remove(k)
+                    
+    #            roads = list(set(roads) - set(to_remove))
+            
+            else:
+                roads = list(roads)
+            
+            if len(coeffs_list) == 0:
+                return None,None,None,None,\
+            None,None,None,\
+            None,None,None,\
+            None,None,None,\
+            None,None,None,True,True
+    
+            
+            con_matrix = self.get_connectivity(roads,outgoings, incomings)
+    #        if con_matrix==None:
+                
+            to_return_centers = torch.tensor(np.int64(img_centers)).long()
+            orig_img_centers = torch.tensor(np.int64(orig_img_centers)).long()
+            labels = torch.ones(len(roads))
+            
+    #        logging.error('DILATED LIST ' + str(len(dilated_list)))
+    #        logging.error('DILATED LIST ELEMENT ' + str(dilated_list[0].shape))
+    #        
+        #     return obj_to_return, center_width_orient,con_matrix,np.array(endpoints),vis_labels,bev_labels,static_labels,\
+        # orig_img_centers,np.stack(origs),np.stack(dilated_list),\
+        # np.stack(smoothed),scene_token,sample_token,\
+        # to_return_centers,labels, roads,\
+        # np.array(coeffs_list), outgoings, incomings,singapore, False, obj_exists
+    
+            return con_matrix,np.array(endpoints),vis_labels,occ_labels,\
+        orig_img_centers,np.stack(origs),np.stack(dilated_list),\
+        np.stack(smoothed),scene_token,sample_token,\
+        to_return_centers,labels, roads,\
+        np.array(coeffs_list), outgoings, incomings,singapore, False
         
-        else:
-            roads = list(roads)
-        
-        if len(coeffs_list) == 0:
+        except Exception as e:
+            logging.error('LINE LOADING ' + str(e))
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            logging.error(str((exc_type, fname, exc_tb.tb_lineno)))
+       
             return None,None,None,None,\
-        None,None,None,\
-        None,None,None,\
-        None,None,None,\
-        None,None,None,True,True
-
+            None,None,None,\
+            None,None,None,\
+            None,None,None,\
+            None,None,None,True,True
         
-        con_matrix = self.get_connectivity(roads,outgoings, incomings)
-#        if con_matrix==None:
-            
-        to_return_centers = torch.tensor(np.int64(img_centers)).long()
-        orig_img_centers = torch.tensor(np.int64(orig_img_centers)).long()
-        labels = torch.ones(len(roads))
-        
-#        logging.error('DILATED LIST ' + str(len(dilated_list)))
-#        logging.error('DILATED LIST ELEMENT ' + str(dilated_list[0].shape))
-#        
-    #     return obj_to_return, center_width_orient,con_matrix,np.array(endpoints),vis_labels,bev_labels,static_labels,\
-    # orig_img_centers,np.stack(origs),np.stack(dilated_list),\
-    # np.stack(smoothed),scene_token,sample_token,\
-    # to_return_centers,labels, roads,\
-    # np.array(coeffs_list), outgoings, incomings,singapore, False, obj_exists
-
-        return con_matrix,np.array(endpoints),vis_labels,occ_labels,\
-    orig_img_centers,np.stack(origs),np.stack(dilated_list),\
-    np.stack(smoothed),scene_token,sample_token,\
-    to_return_centers,labels, roads,\
-    np.array(coeffs_list), outgoings, incomings,singapore, False
-
             
 def my_line_maker(points,size=(196,200)):
     

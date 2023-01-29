@@ -69,27 +69,27 @@ def build_argoverse_datasets(config,args, val=False, pinet=False, gt_polygon_ext
           'train' : ArgoverseTrackingLoader(os.path.join(trackroot, 'all_logs')),
           # 'val' : ArgoverseTrackingLoader(os.path.join(trackroot, 'all_logs'))
       }
-      if gt_polygon_extraction:
-          if not val:
-              train_data = ArgoverseMapDataset(config, loaders['train'], am,
-                                       TRAIN_LOGS[args.interval_start:args.interval_end],  train=True, pinet=False, gt_polygon_extraction=gt_polygon_extraction)
+      # if gt_polygon_extraction:
+      #     if not val:
+      #         train_data = ArgoverseMapDataset(config, loaders['train'], am,
+      #                                  TRAIN_LOGS[args.interval_start:args.interval_end],  train=True, pinet=False, gt_polygon_extraction=gt_polygon_extraction)
           
-              return train_data, None
-          else:
-              val_data = ArgoverseMapDataset(config,loaders['train'], am, 
-                                      VAL_LOGS[args.interval_start:args.interval_end], train=False, pinet=False, gt_polygon_extraction=gt_polygon_extraction)
-              return None, val_data
+      #         return train_data, None
+      #     else:
+      #         val_data = ArgoverseMapDataset(config,loaders['train'], am, 
+      #                                 VAL_LOGS[args.interval_start:args.interval_end], train=False, pinet=False, gt_polygon_extraction=gt_polygon_extraction)
+      #         return None, val_data
           
             
-      else:
+      # else:
           
-        train_data = ArgoverseMapDataset(config, loaders['train'], am,
-                                       TRAIN_LOGS,  train=True, pinet=False, gt_polygon_extraction=gt_polygon_extraction)
-        val_data = ArgoverseMapDataset(config,loaders['train'], am, 
-                                      VAL_LOGS, train=False, pinet=False)
-      
-      
-        return train_data, val_data
+      train_data = ArgoverseMapDataset(config, loaders['train'], am,
+                                   TRAIN_LOGS,  train=True, pinet=False, gt_polygon_extraction=gt_polygon_extraction)
+      val_data = ArgoverseMapDataset(config,loaders['train'], am, 
+                                  VAL_LOGS, train=False, pinet=False)
+  
+  
+      return train_data, val_data
 
 def my_collate(batch):
     # to_return = []

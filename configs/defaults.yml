@@ -4,17 +4,18 @@
 
 use_dgx: False
 
-logdir: /cluster/work/cvl/cany/TPLR
+logdir: /cluster/work/cvl/cany/simplice
 
 train_dataset: nuscenes
 nusc_root: /cluster/scratch/cany/nuScenes
 nuscenes_version: v1.0-trainval
 
-line_label_root: /cluster/scratch/cany/nuscenes_stuff/cany/lanelines/lines
 vis_label_root: /cluster/scratch/cany/nuscenes_stuff/cany/lanelines/segment
 
+line_label_root: /cluster/scratch/cany/nuscenes_stuff/lines
 
-seg_label_root: /cluster/scratch/cany/nuscenes_stuff/cany/monomaps_labels_vanilla
+seg_label_root: /cluster/scratch/cany/nuscenes_stuff/seg_labels
+
 static_label_root: /cluster/scratch/cany/nuscenes_stuff/cany/bev_labels
 
 num_class: 14

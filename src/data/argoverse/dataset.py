@@ -94,6 +94,7 @@ class ArgoverseMapDataset(Dataset):
             
             calib = self.load_calib(logid)
             
+            # logging.error('IMAGE ' + str(np.any(image == None)))
             
             con_matrix,endpoints,\
         orig_img_centers, origs,mask,\
@@ -131,33 +132,36 @@ class ArgoverseMapDataset(Dataset):
             
             my_grid_points = np.copy(np.ascontiguousarray(grid_sorted_points))
             
-            try:
+            # try:
                 
-                if self.gt_polygon_extraction:
+            #     if self.gt_polygon_extraction:
                 
-                    poly_centers, poly_one_hots, blob_mat, blob_ids = self.get_polygons(to_return_centers, roads)
-                else:
-                    blob_mat, poly_centers, poly_one_hots, blob_ids = self.gt_poly_dict[logid+'_'+str(timestamp)]
+            #         poly_centers, poly_one_hots, blob_mat, blob_ids = self.get_polygons(to_return_centers, roads)
+            #     else:
+            #         blob_mat, poly_centers, poly_one_hots, blob_ids = self.gt_poly_dict[logid+'_'+str(timestamp)]
                 
-                if np.any(blob_mat == None):
-                    return (None, dict(), True)
+            #     if np.any(blob_mat == None):
+            #         return (None, dict(), True)
                 
 
-            except Exception as e:
-                return (None, dict(), True)
-                logging.error('GT POLYGON EXCEPTION : ' + str(e))
+            # except Exception as e:
+            #     return (None, dict(), True)
+            #     logging.error('GT POLYGON EXCEPTION : ' + str(e))
             
             
             target = dict()
             intersections = self.get_order_labels(coeffs)
             target['gt_order_labels'] = torch.tensor(intersections).long()
             
-            target['blob_ids'] = torch.tensor(blob_ids).long()
-            target['blob_mat'] = torch.tensor(blob_mat).long()
-            target['poly_one_hots'] = torch.tensor(poly_one_hots).float()
-            target['poly_centers'] = torch.tensor(poly_centers).float()
+            # target['blob_ids'] = torch.tensor(blob_ids).long()
+            # target['blob_mat'] = torch.tensor(blob_mat).long()
+            # target['poly_one_hots'] = torch.tensor(poly_one_hots).float()
+            # target['poly_centers'] = torch.tensor(poly_centers).float()
             
-
+            target['blob_ids'] = torch.tensor(0).long()
+            target['blob_mat'] = torch.tensor(0).long()
+            target['poly_one_hots'] =  torch.tensor(0).long()
+            target['poly_centers'] =  torch.tensor(0).long()
             
         
             target['mask'] = torch.tensor(mask).float()

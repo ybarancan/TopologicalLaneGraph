@@ -30,13 +30,18 @@ def evaluate(dataloader, model, criterion, postprocessors, confusion, config,arg
      model.eval()
 
      criterion.eval()
-
+     my_save_list_prob = dict()
+    
+     my_save_list_coef = dict()
+     my_save_list_assoc = dict()
      logging.error('VALIDATION')
      # Iterate over dataset
      for i, batch in enumerate(tqdm(dataloader)):
         
         seq_images, targets, _ = batch
+
         if seq_images == None:
+            # logging.error('NONE IMAGE')
             continue
         seq_images = seq_images.cuda()
         cuda_targets = []
@@ -84,32 +89,42 @@ def evaluate(dataloader, model, criterion, postprocessors, confusion, config,arg
         
         time1 = time.time()
         
-        poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots = vis_tools.get_polygons(base_postprocessed, global_thresh)
+        
+        
+#        my_save_list_prob[targets[0]['sample_token']] = np.copy(outputs['pred_logits'].cpu().detach().numpy())
+#        # my_save_list_prob.append(outputs['pred_logits'].cpu().detach().numpy())
+#        my_save_list_coef[targets[0]['sample_token']] = np.copy(outputs['pred_boxes'].cpu().detach().numpy())
+#        # my_save_list_coef.append(outputs['pred_boxes'].cpu().detach().numpy())
+#        my_save_list_assoc[targets[0]['sample_token']] = np.copy(threshed_outputs['pred_assoc'].cpu().detach().numpy())
+        # poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots = vis_tools.get_polygons(base_postprocessed, global_thresh)
 
 #        logging.error('TIME FOR EXTRACTING POLYGONS ' + str(time.time() - time1))
 
-        out[0]['my_blob_mat'] = blob_mat
+#         out[0]['my_blob_mat'] = blob_mat
         
-        match_static_indices,  match_poly_indices = criterion.matcher(outputs, cuda_targets,  do_polygons=True)
-        
-        matched_static_outputs = criterion.get_assoc_estimates( outputs, match_static_indices)
-        
-        static_inter_dict, static_idx, static_target_ids = criterion.get_interpolated(matched_static_outputs, cuda_targets, match_static_indices)
-        
+#        match_static_indices,  match_poly_indices = criterion.matcher(outputs, cuda_targets,  do_polygons=False)
+#        
+#        matched_static_outputs = criterion.get_assoc_estimates( outputs, match_static_indices)
+#        
+#        static_inter_dict, static_idx, static_target_ids = criterion.get_interpolated(matched_static_outputs, cuda_targets, match_static_indices)
+#        
         hausdorff_static_dist, hausdorff_static_idx, hausdorff_gt = vis_tools.hausdorff_match(out[0], targets[0])
         merged_hausdorff_static_dist, merged_hausdorff_static_idx, merged_res_interpolated = vis_tools.merged_hausdorff_match(out[0], targets[0])
          
         try:
-            poly_stuff=(poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots)
-#            poly_stuff=(None, None,None,None,None)
-            confusion.update(out[0], static_inter_dict, hausdorff_gt, hausdorff_static_idx,  merged_hausdorff_static_idx, static_idx, static_target_ids, targets[0], poly_stuff=poly_stuff,do_common_poly=True, do_polys=True)
+            # poly_stuff=(poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots)
+            poly_stuff=(None, None,None,None,None)
+            confusion.update(out[0], None, hausdorff_gt, hausdorff_static_idx,  merged_hausdorff_static_idx, None, None, targets[0], poly_stuff=poly_stuff,do_common_poly=False, do_polys=False)
 
         except Exception as e:
             logging.error('EXCEPTION IN CONFUSION ')
             logging.error(str(e))
             continue
-        
-          
+#        
+#     np.save('/scratch_net/catweazle/cany/val2_vanilla_est_prob.npy', my_save_list_prob)
+#     np.save('/scratch_net/catweazle/cany/val2_vanilla_est_coef.npy', my_save_list_coef)
+#     np.save('/scratch_net/catweazle/cany/val2_vanilla_est_assoc.npy', my_save_list_assoc)
+     
      return confusion
 
 def load_checkpoint(path, model):
@@ -177,7 +192,7 @@ def freeze_backbone_layers(model):
     
 #                logging.error(str(n) + ', '+str(p.requires_grad))
 
-base_version = False
+base_version = True
 
 
 split_pe = True
@@ -189,10 +204,10 @@ only_bev_pe=False
 
 
 euler=False
-intersection_mode='polygon'
+intersection_mode='None'
 
 
-base_dir = '/scratch_net/catweazle/cany/TPLR'
+base_dir = '/scratch_net/catweazle/cany/simplice'
 
 
 def main():
@@ -450,21 +465,33 @@ def main():
     
    
     logging.error('BUILD ENTER DATA')
-    _,_,val_loader, val_dataset = data_factory.build_argoverse_dataloader(config,args, val=True)
+    _,train_dataset,val_loader, val_dataset = data_factory.build_argoverse_dataloader(config,args, val=True)
     
     logging.error('BUILT DATA')
     
   
-    epoch, best_iou, iteration = load_checkpoint(os.path.join(base_dir,'final_ckpts', 'TR_MC_Argo.pth'),
-                              model)
-
+    # epoch, best_iou, iteration = load_checkpoint(os.path.join(base_dir,'final_ckpts', 'TR_MC_Argo.pth'),
+    #                           model)
+    
+#    epoch, best_iou, iteration = load_checkpoint(os.path.join('/scratch_net/catweazle/cany/lanefinder/argoverse_TR_False', 'latest.pth'),
+#                              model)
+    
+#    epoch, best_iou, iteration = load_checkpoint(os.path.join('/scratch_net/catweazle/cany/lanefinder/maxi_poly_loss_split_True_refineTrue/keep2', 'latest.pth'),
+#                                  model)
+#    
+    epoch, best_iou, iteration = load_checkpoint(os.path.join('/scratch_net/catweazle/cany/simplice/checkpoints/trans-base', 'latest.pth'),
+                                  model)
     
     logging.error('LOADED MY CHECKPOINT')
 
     
     freeze_backbone_layers(model)
    
-
+    logging.error('LEN TRAIN LOADER')
+    logging.error(len(train_dataset))
+    
+    logging.error('LEN VAL LOADER')
+    logging.error(len(val_dataset))
  
     thresh = 0.3
     logging.error('THRESH')
@@ -479,8 +506,8 @@ def main():
     file1 = open(os.path.join(logdir,'val_res_.txt'),"a")
     
     for k in static_res_dict.keys():
-        logging.error(str(k) + ' : ' + str(static_res_dict[k]))
-        file1.write(str(k) + ' : ' + str(static_res_dict[k]) + ' \n')
+         logging.error(str(k) + ' : ' + str(static_res_dict[k]))
+         file1.write(str(k) + ' : ' + str(static_res_dict[k]) + ' \n')
     
 
     file1.close()    

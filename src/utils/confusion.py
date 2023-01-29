@@ -254,52 +254,52 @@ class BinaryConfusionMatrix(object):
             res_interpolated_list = out['interpolated_points']
             
 
-            poly_ara = []
-            for k in range(len(haus_gt)):
-                # logging.error('ARA MATCH ' + str(fin_sel[np.where(ind==k)[0]].shape))
-                poly_ara.append([])
+            # poly_ara = []
+            # for k in range(len(haus_gt)):
+            #     # logging.error('ARA MATCH ' + str(fin_sel[np.where(ind==k)[0]].shape))
+            #     poly_ara.append([])
                 
-            for m in range(5):
+            # for m in range(5):
                 
-                poly_ara.append(np.int64(np.array([len(res_interpolated_list)+m])))
+            #     poly_ara.append(np.int64(np.array([len(res_interpolated_list)+m])))
             
-            if len(res_interpolated_list) > 0:
+            # if len(res_interpolated_list) > 0:
                 
                 
-                for k in range(len(res_interpolated_list)):
+            #     for k in range(len(res_interpolated_list)):
 
-                    poly_ara[haus_idx[k]].append(k)
-            '''
-            POLY
-            '''
-            ara = []
-            for k in range(len(haus_gt)):
-                # logging.error('ARA MATCH ' + str(fin_sel[np.where(ind==k)[0]].shape))
-                ara.append([])
+            #         poly_ara[haus_idx[k]].append(k)
+            # '''
+            # POLY
+            # '''
+            # ara = []
+            # for k in range(len(haus_gt)):
+            #     # logging.error('ARA MATCH ' + str(fin_sel[np.where(ind==k)[0]].shape))
+            #     ara.append([])
                 
-            for m in range(5):
+            # for m in range(5):
                 
-                ara.append(np.int64(np.array([len(res_interpolated_list)+m])))
+            #     ara.append(np.int64(np.array([len(res_interpolated_list)+m])))
             
-            if len(res_interpolated_list) > 0:
+            # if len(res_interpolated_list) > 0:
                 
                 
-                for k in range(len(res_interpolated_list)):
+            #     for k in range(len(res_interpolated_list)):
 
-                    ara[haus_idx[k]].append(k)
+            #         ara[haus_idx[k]].append(k)
                     
-            # logging.error('ARA ' + str(ara))
+            # # logging.error('ARA ' + str(ara))
             
-            non_matched_gts = []
-            for k in range(len(haus_gt)):
-                if len(ara[k]) == 0:
-                    non_matched_gts.append(k)
+            # non_matched_gts = []
+            # for k in range(len(haus_gt)):
+            #     if len(ara[k]) == 0:
+            #         non_matched_gts.append(k)
                     
                     
-            poly_non_matched_gts = []
-            for k in range(len(haus_gt)):
-                if len(poly_ara[k]) == 0:
-                    poly_non_matched_gts.append(k)
+            # poly_non_matched_gts = []
+            # for k in range(len(haus_gt)):
+            #     if len(poly_ara[k]) == 0:
+            #         poly_non_matched_gts.append(k)
                     
             # logging.error('NON MATCHED ' + str(non_matched_gts))
             '''
@@ -308,944 +308,944 @@ class BinaryConfusionMatrix(object):
             
             time1 = time.time()
             
-            tgt_polys = targets["poly_one_hots"].cpu().numpy()
+#             tgt_polys = targets["poly_one_hots"].cpu().numpy()
                         
             
-            self.polygon_nums.append(len(tgt_polys))
+#             self.polygon_nums.append(len(tgt_polys))
             
-            if do_common_poly:
+#             if do_common_poly:
                 
-                poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots = poly_stuff
+#                 poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots = poly_stuff
                 
-                if np.any(poly_centers == None):
+#                 if np.any(poly_centers == None):
                
-                    self.common_per_poly_fn = self.common_per_poly_fn + np.sum(tgt_polys)
+#                     self.common_per_poly_fn = self.common_per_poly_fn + np.sum(tgt_polys)
                 
-                else:
+#                 else:
                     
-                    self.common_polygon_nums.append(len(poly_one_hots))
+#                     self.common_polygon_nums.append(len(poly_one_hots))
                     
-                    comp_ar = np.zeros((len(tgt_polys),poly_one_hots.shape[-1]),np.float32)
+#                     comp_ar = np.zeros((len(tgt_polys),poly_one_hots.shape[-1]),np.float32)
                         
                         
-                    for k in range(len(tgt_polys)):
-                        cu = tgt_polys[k]
-                        for m in range(len(cu)):
-                            if cu[m]>0:
+#                     for k in range(len(tgt_polys)):
+#                         cu = tgt_polys[k]
+#                         for m in range(len(cu)):
+#                             if cu[m]>0:
                                 
-                                comp_ar[k,poly_ara[m]] = 1
+#                                 comp_ar[k,poly_ara[m]] = 1
                     
-                    poly_loss_matrix = np.zeros((len(tgt_polys),poly_one_hots.shape[0]))
-                    poly_tp_matrix = np.zeros((len(tgt_polys),poly_one_hots.shape[0]))
-                    poly_fn_matrix = np.zeros((len(tgt_polys),poly_one_hots.shape[0]))
-                    poly_fp_matrix = np.zeros((len(tgt_polys),poly_one_hots.shape[0]))
-                    for k in range(len(tgt_polys)):
-                        cu = tgt_polys[k]
-                        for m in range(len(cu)):
-                            if cu[m]>0:
+#                     poly_loss_matrix = np.zeros((len(tgt_polys),poly_one_hots.shape[0]))
+#                     poly_tp_matrix = np.zeros((len(tgt_polys),poly_one_hots.shape[0]))
+#                     poly_fn_matrix = np.zeros((len(tgt_polys),poly_one_hots.shape[0]))
+#                     poly_fp_matrix = np.zeros((len(tgt_polys),poly_one_hots.shape[0]))
+#                     for k in range(len(tgt_polys)):
+#                         cu = tgt_polys[k]
+#                         for m in range(len(cu)):
+#                             if cu[m]>0:
                                 
-                                if len(poly_ara[m]) > 0:
+#                                 if len(poly_ara[m]) > 0:
                                 
-                                    poly_loss_matrix[k, :] = poly_loss_matrix[k, :] + np.logical_not(np.any(poly_one_hots[:,poly_ara[m]] > 0.5,axis=-1))
+#                                     poly_loss_matrix[k, :] = poly_loss_matrix[k, :] + np.logical_not(np.any(poly_one_hots[:,poly_ara[m]] > 0.5,axis=-1))
                                     
                                     
-                                    poly_tp_matrix[k, :] = poly_tp_matrix[k, :] + np.any(poly_one_hots[:,poly_ara[m]] > 0.5,axis=-1)
+#                                     poly_tp_matrix[k, :] = poly_tp_matrix[k, :] + np.any(poly_one_hots[:,poly_ara[m]] > 0.5,axis=-1)
                                 
                                     
-                                    poly_fn_matrix[k, :] = poly_fn_matrix[k, :] + np.logical_not(np.any(poly_one_hots[:,poly_ara[m]] > 0.5,axis=-1))
+#                                     poly_fn_matrix[k, :] = poly_fn_matrix[k, :] + np.logical_not(np.any(poly_one_hots[:,poly_ara[m]] > 0.5,axis=-1))
                                 
                                 
-                            else:
+#                             else:
                                 
-                                if len(ara[m]) > 0:
+#                                 if len(ara[m]) > 0:
                                 
-                                    poly_loss_matrix[k, :] = poly_loss_matrix[k, :] + np.any(poly_one_hots[:,poly_ara[m]] > 0.5,axis=-1)
+#                                     poly_loss_matrix[k, :] = poly_loss_matrix[k, :] + np.any(poly_one_hots[:,poly_ara[m]] > 0.5,axis=-1)
                                     
                                     
-                                    poly_fp_matrix[k, :] = poly_fp_matrix[k, :] + np.any(poly_one_hots[:,poly_ara[m]] > 0.5,axis=-1)
+#                                     poly_fp_matrix[k, :] = poly_fp_matrix[k, :] + np.any(poly_one_hots[:,poly_ara[m]] > 0.5,axis=-1)
                                 
                         
                     
-                    i,j=linear_sum_assignment(poly_loss_matrix)   
+#                     i,j=linear_sum_assignment(poly_loss_matrix)   
                     
-                    matched_gt_polys = comp_ar[i]
+#                     matched_gt_polys = comp_ar[i]
                     
-                    matched_est_polys = poly_one_hots[j]
+#                     matched_est_polys = poly_one_hots[j]
                     
-                    self.common_last_matched_gt_polys = matched_gt_polys
-                    self.common_last_matched_est_polys = matched_est_polys
+#                     self.common_last_matched_gt_polys = matched_gt_polys
+#                     self.common_last_matched_est_polys = matched_est_polys
                     
-                    self.common_last_poly_match_gt_indices = i
-                    self.common_last_poly_match_est_indices = j
+#                     self.common_last_poly_match_gt_indices = i
+#                     self.common_last_poly_match_est_indices = j
                     
-                    matched_gt_polys = matched_gt_polys > 0.5
-                    matched_est_polys = matched_est_polys > 0.5
+#                     matched_gt_polys = matched_gt_polys > 0.5
+#                     matched_est_polys = matched_est_polys > 0.5
                     
            
                     
                     
-                    self.common_per_poly_tp = self.common_per_poly_tp + np.sum(poly_tp_matrix[i,j])
-                    self.common_per_poly_fn = self.common_per_poly_fn + np.sum(poly_fn_matrix[i,j])
-                    self.common_per_poly_fp = self.common_per_poly_fp + np.sum(poly_fp_matrix[i,j])
+#                     self.common_per_poly_tp = self.common_per_poly_tp + np.sum(poly_tp_matrix[i,j])
+#                     self.common_per_poly_fn = self.common_per_poly_fn + np.sum(poly_fn_matrix[i,j])
+#                     self.common_per_poly_fp = self.common_per_poly_fp + np.sum(poly_fp_matrix[i,j])
     
-                    self.common_per_poly_tp_list.append(np.sum(poly_tp_matrix[i,j]))
-                    self.common_per_poly_fn_list.append(np.sum(poly_fn_matrix[i,j]))
-                    self.common_per_poly_fp_list.append(np.sum(poly_fp_matrix[i,j]))
+#                     self.common_per_poly_tp_list.append(np.sum(poly_tp_matrix[i,j]))
+#                     self.common_per_poly_fn_list.append(np.sum(poly_fn_matrix[i,j]))
+#                     self.common_per_poly_fp_list.append(np.sum(poly_fp_matrix[i,j]))
                     
-                    non_matched_penalty = 0
+#                     non_matched_penalty = 0
                     
-                    for k in range(len(poly_non_matched_gts)):
-                        temp_sum = np.sum(tgt_polys[:,poly_non_matched_gts[k]])
-                        non_matched_penalty = non_matched_penalty + temp_sum
+#                     for k in range(len(poly_non_matched_gts)):
+#                         temp_sum = np.sum(tgt_polys[:,poly_non_matched_gts[k]])
+#                         non_matched_penalty = non_matched_penalty + temp_sum
                         
-                    self.common_per_poly_fn = self.common_per_poly_fn + non_matched_penalty
-                    self.common_per_poly_fn_list.append(non_matched_penalty)
+#                     self.common_per_poly_fn = self.common_per_poly_fn + non_matched_penalty
+#                     self.common_per_poly_fn_list.append(non_matched_penalty)
                     
-                    # if len(i) < len(tgt_polys):
-                    #     non_detected_tgts = np.setdiff1d(np.arange(len(tgt_polys)),i)
-                    #     self.common_per_poly_fn = self.common_per_poly_fn + np.sum(tgt_polys[non_detected_tgts])
+#                     # if len(i) < len(tgt_polys):
+#                     #     non_detected_tgts = np.setdiff1d(np.arange(len(tgt_polys)),i)
+#                     #     self.common_per_poly_fn = self.common_per_poly_fn + np.sum(tgt_polys[non_detected_tgts])
                       
-                    # if len(j) < len(poly_one_hots):
-                    #     non_detected_tgts = np.setdiff1d(np.arange(len(poly_one_hots)),j)
-                    #     self.common_per_poly_fp = self.common_per_poly_fp + np.sum(np.logical_or(np.any(poly_fp_matrix[:,non_detected_tgts],axis=0), np.any(poly_tp_matrix[:,non_detected_tgts],axis=0)))
+#                     # if len(j) < len(poly_one_hots):
+#                     #     non_detected_tgts = np.setdiff1d(np.arange(len(poly_one_hots)),j)
+#                     #     self.common_per_poly_fp = self.common_per_poly_fp + np.sum(np.logical_or(np.any(poly_fp_matrix[:,non_detected_tgts],axis=0), np.any(poly_tp_matrix[:,non_detected_tgts],axis=0)))
                         
        
-                    if do_polys:
-                        if np.any(poly_centers == None):
+#                     if do_polys:
+#                         if np.any(poly_centers == None):
                
-                            self.cross_per_poly_fn = self.cross_per_poly_fn + np.sum(poly_one_hots)
+#                             self.cross_per_poly_fn = self.cross_per_poly_fn + np.sum(poly_one_hots)
                             
-                        else:
-                            if len(out['boxes']) > 0:
-                                if len(out['poly_hamming']) > 0:
-                                    unique_hamming = out['poly_hamming'] 
+#                         else:
+#                             if len(out['boxes']) > 0:
+#                                 if len(out['poly_hamming']) > 0:
+#                                     unique_hamming = out['poly_hamming'] 
                                     
-                                    inv_cross_loss_matrix = np.sum(np.expand_dims(poly_one_hots,axis=1)*np.expand_dims(unique_hamming,axis=0),axis=-1)
+#                                     inv_cross_loss_matrix = np.sum(np.expand_dims(poly_one_hots,axis=1)*np.expand_dims(unique_hamming,axis=0),axis=-1)
                                     
-                                    i,j=linear_sum_assignment(poly_one_hots.shape[-1] - inv_cross_loss_matrix)   
+#                                     i,j=linear_sum_assignment(poly_one_hots.shape[-1] - inv_cross_loss_matrix)   
                         
-                                    cross_gt_polys = poly_one_hots[i]
+#                                     cross_gt_polys = poly_one_hots[i]
                                     
-                                    cross_est_polys = unique_hamming[j]
+#                                     cross_est_polys = unique_hamming[j]
                                     
                                     
-                                    self.cross_per_poly_tp = self.cross_per_poly_tp + np.sum(cross_gt_polys*cross_est_polys)
-                                    self.cross_per_poly_fn = self.cross_per_poly_fn + np.sum(cross_gt_polys*(1-cross_est_polys))
-                                    self.cross_per_poly_fp = self.cross_per_poly_fp + np.sum((1-cross_gt_polys)*cross_est_polys)
+#                                     self.cross_per_poly_tp = self.cross_per_poly_tp + np.sum(cross_gt_polys*cross_est_polys)
+#                                     self.cross_per_poly_fn = self.cross_per_poly_fn + np.sum(cross_gt_polys*(1-cross_est_polys))
+#                                     self.cross_per_poly_fp = self.cross_per_poly_fp + np.sum((1-cross_gt_polys)*cross_est_polys)
                           
-                                    self.cross_per_poly_tp_list.append(np.sum(cross_gt_polys*cross_est_polys))
-                                    self.cross_per_poly_fn_list.append(np.sum(cross_gt_polys*(1-cross_est_polys)))
-                                    self.cross_per_poly_fp_list.append(np.sum((1-cross_gt_polys)*cross_est_polys))
+#                                     self.cross_per_poly_tp_list.append(np.sum(cross_gt_polys*cross_est_polys))
+#                                     self.cross_per_poly_fn_list.append(np.sum(cross_gt_polys*(1-cross_est_polys)))
+#                                     self.cross_per_poly_fp_list.append(np.sum((1-cross_gt_polys)*cross_est_polys))
                       
                         
             
-            time2 = time.time()
-#            logging.error('COMMON POLY ' + str(time2 - time1))
+#             time2 = time.time()
+# #            logging.error('COMMON POLY ' + str(time2 - time1))
             
-            if do_polys:   
+#             if do_polys:   
                 
-                # logging.error('KEYS')
-                # logging.error(str(out.keys()))
-                if len(out['boxes']) > 0:
-                    detected_poly_probs = out['poly_probs']  
-                    detected_poly_centers = out['poly_centers']  
-                    unique_hamming = out['poly_hamming'] 
-                    self.head_polygon_nums.append(len(unique_hamming))
-                    if len(unique_hamming) > 0:
+#                 # logging.error('KEYS')
+#                 # logging.error(str(out.keys()))
+#                 if len(out['boxes']) > 0:
+#                     detected_poly_probs = out['poly_probs']  
+#                     detected_poly_centers = out['poly_centers']  
+#                     unique_hamming = out['poly_hamming'] 
+#                     self.head_polygon_nums.append(len(unique_hamming))
+#                     if len(unique_hamming) > 0:
                     
-                        comp_ar = np.zeros((len(tgt_polys),unique_hamming.shape[-1]),np.float32)
+#                         comp_ar = np.zeros((len(tgt_polys),unique_hamming.shape[-1]),np.float32)
                         
                         
-                        for k in range(len(tgt_polys)):
-                            cu = tgt_polys[k]
-                            for m in range(len(cu)):
-                                if cu[m]>0:
-                                    comp_ar[k,poly_ara[m]] = 1
+#                         for k in range(len(tgt_polys)):
+#                             cu = tgt_polys[k]
+#                             for m in range(len(cu)):
+#                                 if cu[m]>0:
+#                                     comp_ar[k,poly_ara[m]] = 1
                                     
                         
-                        poly_loss_matrix = np.zeros((len(tgt_polys),unique_hamming.shape[0]))
-                        poly_tp_matrix = np.zeros((len(tgt_polys),unique_hamming.shape[0]))
-                        poly_fn_matrix = np.zeros((len(tgt_polys),unique_hamming.shape[0]))
-                        poly_fp_matrix = np.zeros((len(tgt_polys),unique_hamming.shape[0]))
-                        for k in range(len(tgt_polys)):
-                            cu = tgt_polys[k]
-                            for m in range(len(cu)):
-                                if cu[m]>0:
+#                         poly_loss_matrix = np.zeros((len(tgt_polys),unique_hamming.shape[0]))
+#                         poly_tp_matrix = np.zeros((len(tgt_polys),unique_hamming.shape[0]))
+#                         poly_fn_matrix = np.zeros((len(tgt_polys),unique_hamming.shape[0]))
+#                         poly_fp_matrix = np.zeros((len(tgt_polys),unique_hamming.shape[0]))
+#                         for k in range(len(tgt_polys)):
+#                             cu = tgt_polys[k]
+#                             for m in range(len(cu)):
+#                                 if cu[m]>0:
                                     
-                                    if len(poly_ara[m]) > 0:
+#                                     if len(poly_ara[m]) > 0:
                                     
-                                        poly_loss_matrix[k, :] = poly_loss_matrix[k, :] + np.logical_not(np.any(unique_hamming[:,poly_ara[m]] > 0.5,axis=-1))
+#                                         poly_loss_matrix[k, :] = poly_loss_matrix[k, :] + np.logical_not(np.any(unique_hamming[:,poly_ara[m]] > 0.5,axis=-1))
                                         
                                         
-                                        poly_tp_matrix[k, :] = poly_tp_matrix[k, :] + np.any(unique_hamming[:,poly_ara[m]] > 0.5,axis=-1)
+#                                         poly_tp_matrix[k, :] = poly_tp_matrix[k, :] + np.any(unique_hamming[:,poly_ara[m]] > 0.5,axis=-1)
                                     
                                         
-                                        poly_fn_matrix[k, :] = poly_fn_matrix[k, :] + np.logical_not(np.any(unique_hamming[:,poly_ara[m]] > 0.5,axis=-1))
+#                                         poly_fn_matrix[k, :] = poly_fn_matrix[k, :] + np.logical_not(np.any(unique_hamming[:,poly_ara[m]] > 0.5,axis=-1))
                                     
              
-                                else:
+#                                 else:
                                     
-                                    if len(ara[m]) > 0:
+#                                     if len(ara[m]) > 0:
                                     
-                                        poly_loss_matrix[k, :] = poly_loss_matrix[k, :] + np.any(unique_hamming[:,poly_ara[m]] > 0.5,axis=-1)
+#                                         poly_loss_matrix[k, :] = poly_loss_matrix[k, :] + np.any(unique_hamming[:,poly_ara[m]] > 0.5,axis=-1)
                                         
                                         
-                                        poly_fp_matrix[k, :] = poly_fp_matrix[k, :] + np.any(unique_hamming[:,poly_ara[m]] > 0.5,axis=-1)
+#                                         poly_fp_matrix[k, :] = poly_fp_matrix[k, :] + np.any(unique_hamming[:,poly_ara[m]] > 0.5,axis=-1)
                                     
                             
                         
-                        i,j=linear_sum_assignment(poly_loss_matrix)   
+#                         i,j=linear_sum_assignment(poly_loss_matrix)   
                         
-                        matched_gt_polys = comp_ar[i]
+#                         matched_gt_polys = comp_ar[i]
                         
-                        matched_est_polys = unique_hamming[j]
+#                         matched_est_polys = unique_hamming[j]
                         
-                        self.last_matched_gt_polys = matched_gt_polys
-                        self.last_matched_est_polys = matched_est_polys
+#                         self.last_matched_gt_polys = matched_gt_polys
+#                         self.last_matched_est_polys = matched_est_polys
                         
-                        self.last_poly_match_gt_indices = i
-                        self.last_poly_match_est_indices = j
+#                         self.last_poly_match_gt_indices = i
+#                         self.last_poly_match_est_indices = j
                         
-                        matched_gt_polys = matched_gt_polys > 0.5
-                        matched_est_polys = matched_est_polys > 0.5
+#                         matched_gt_polys = matched_gt_polys > 0.5
+#                         matched_est_polys = matched_est_polys > 0.5
                         
                
                         
                         
-                        self.per_poly_tp = self.per_poly_tp + np.sum(poly_tp_matrix[i,j])
-                        self.per_poly_fn = self.per_poly_fn + np.sum(poly_fn_matrix[i,j])
-                        self.per_poly_fp = self.per_poly_fp + np.sum(poly_fp_matrix[i,j])
+#                         self.per_poly_tp = self.per_poly_tp + np.sum(poly_tp_matrix[i,j])
+#                         self.per_poly_fn = self.per_poly_fn + np.sum(poly_fn_matrix[i,j])
+#                         self.per_poly_fp = self.per_poly_fp + np.sum(poly_fp_matrix[i,j])
                                     
-                        self.per_poly_tp_list.append(np.sum(poly_tp_matrix[i,j]))
-                        self.per_poly_fn_list.append(np.sum(poly_fn_matrix[i,j]))
-                        self.per_poly_fp_list.append(np.sum(poly_fp_matrix[i,j]))
+#                         self.per_poly_tp_list.append(np.sum(poly_tp_matrix[i,j]))
+#                         self.per_poly_fn_list.append(np.sum(poly_fn_matrix[i,j]))
+#                         self.per_poly_fp_list.append(np.sum(poly_fp_matrix[i,j]))
                                     
-                        non_matched_penalty = 0
+#                         non_matched_penalty = 0
                         
-                        for k in range(len(poly_non_matched_gts)):
-                            temp_sum = np.sum(tgt_polys[:,poly_non_matched_gts[k]])
-                            non_matched_penalty = non_matched_penalty + temp_sum
+#                         for k in range(len(poly_non_matched_gts)):
+#                             temp_sum = np.sum(tgt_polys[:,poly_non_matched_gts[k]])
+#                             non_matched_penalty = non_matched_penalty + temp_sum
                             
-                        self.per_poly_fn = self.per_poly_fn + non_matched_penalty
-                        self.per_poly_fn_list.append(non_matched_penalty)
+#                         self.per_poly_fn = self.per_poly_fn + non_matched_penalty
+#                         self.per_poly_fn_list.append(non_matched_penalty)
                  
-                    else:
+#                     else:
              
-                        self.per_poly_fn = self.per_poly_fn + np.sum(tgt_polys)
-                        self.poly_fn = self.poly_fn + len(tgt_polys)
+#                         self.per_poly_fn = self.per_poly_fn + np.sum(tgt_polys)
+#                         self.poly_fn = self.poly_fn + len(tgt_polys)
             
                     
                 
-                else:
+#                 else:
              
-                    self.per_poly_fn = self.per_poly_fn + np.sum(tgt_polys)
-                    self.poly_fn = self.poly_fn + len(tgt_polys)
+#                     self.per_poly_fn = self.per_poly_fn + np.sum(tgt_polys)
+#                     self.poly_fn = self.poly_fn + len(tgt_polys)
                
                 
-            time3 = time.time()
-            logging.error('PER POLY ' + str(time3 - time2))
-            '''
-            ORDER 
-            '''
+#             time3 = time.time()
+#             logging.error('PER POLY ' + str(time3 - time2))
+#             '''
+#             ORDER 
+#             '''
             
-            '''
-            FIRST GET ESTIMATED
-            '''
-            
-            
+#             '''
+#             FIRST GET ESTIMATED
+#             '''
             
             
-            # logging.error('RES AR ORDER ' + str(res_ar.shape))
-#                non_matched_list = []
             
-            final_matched_list=[]
             
-            if len(out['boxes']) > 0:
-                est_coeffs_ar = np.reshape(out['boxes'],(out['boxes'].shape[0],-1))
-                orig_coeffs = targets['control_points'].cpu().numpy()
-                if not pinet:
-                    res_ar = np.array(out['merged_interpolated_points'])
+#             # logging.error('RES AR ORDER ' + str(res_ar.shape))
+# #                non_matched_list = []
+            
+#             final_matched_list=[]
+            
+#             if len(out['boxes']) > 0:
+#                 est_coeffs_ar = np.reshape(out['boxes'],(out['boxes'].shape[0],-1))
+#                 orig_coeffs = targets['control_points'].cpu().numpy()
+#                 if not pinet:
+#                     res_ar = np.array(out['merged_interpolated_points'])
                     
                     
                     
-                    # if len(out['assoc']) > 0:
-                    if len(out['assoc']) > 0:
-                        assoc_est = out['assoc'] > 0.5
+#                     # if len(out['assoc']) > 0:
+#                     if len(out['assoc']) > 0:
+#                         assoc_est = out['assoc'] > 0.5
                         
-                        sel_candids=[]
+#                         sel_candids=[]
                         
                         
                         
-                        for m in range(len(haus_gt)):
-                            all_matched = ara[m]
-                            if len(all_matched) == 0:
+#                         for m in range(len(haus_gt)):
+#                             all_matched = ara[m]
+#                             if len(all_matched) == 0:
                                 
-#                                non_matched_list.append(m)
-                                continue
+# #                                non_matched_list.append(m)
+#                                 continue
                             
-                            cur_asso = assoc_est[all_matched, all_matched]
-                            diag_mask = np.eye(len(cur_asso))
+#                             cur_asso = assoc_est[all_matched, all_matched]
+#                             diag_mask = np.eye(len(cur_asso))
                 
                             
-                            diag_mask = 1 - diag_mask
-                            cur_asso = cur_asso*diag_mask
-                            ins, outs = vis_tools.get_vertices(cur_asso)
+#                             diag_mask = 1 - diag_mask
+#                             cur_asso = cur_asso*diag_mask
+#                             ins, outs = vis_tools.get_vertices(cur_asso)
                             
-                            # candid_in = np.zeros((len(all_matched)))
-                            # candid_out = np.zeros((len(all_matched)))
+#                             # candid_in = np.zeros((len(all_matched)))
+#                             # candid_out = np.zeros((len(all_matched)))
                             
-                            all_candids=[]
-                            for k in range(len(ins)):
+#                             all_candids=[]
+#                             for k in range(len(ins)):
                                 
-                                if k == 0:
-                                    # temp_tuple = (np.array(ins[k]), np.array(outs[k]), [ins[k] + outs[k]])
-                                    temp_tuple = (ins[k], outs[k], [])
+#                                 if k == 0:
+#                                     # temp_tuple = (np.array(ins[k]), np.array(outs[k]), [ins[k] + outs[k]])
+#                                     temp_tuple = (ins[k], outs[k], [])
                                     
-                                    all_candids.append(temp_tuple)
+#                                     all_candids.append(temp_tuple)
                                 
-                                else:
-                                    for t in range(len(all_candids)):
-                                        to_comp_in, to_comp_out, all_lin = all_candids[t]
+#                                 else:
+#                                     for t in range(len(all_candids)):
+#                                         to_comp_in, to_comp_out, all_lin = all_candids[t]
                                         
-                                        for m in range(len(ins[k])):
+#                                         for m in range(len(ins[k])):
                                             
-                                            if ins[k][m] in to_comp_out:
-                                                new_all_lin = []
-                                                for qwe in all_lin:
-                                                    new_all_lin.append(qwe)
-                                                new_all_lin.append(ins[k][m])
-                                                new_to_comp_in = to_comp_in
-                                                new_to_comp_out = outs[k]
+#                                             if ins[k][m] in to_comp_out:
+#                                                 new_all_lin = []
+#                                                 for qwe in all_lin:
+#                                                     new_all_lin.append(qwe)
+#                                                 new_all_lin.append(ins[k][m])
+#                                                 new_to_comp_in = to_comp_in
+#                                                 new_to_comp_out = outs[k]
                                                 
-                                                all_candids.append((new_to_comp_in, new_to_comp_out, new_all_lin))
+#                                                 all_candids.append((new_to_comp_in, new_to_comp_out, new_all_lin))
                                         
-                                        for m in range(len(outs[k])):
+#                                         for m in range(len(outs[k])):
                                             
-                                            if outs[k][m] in to_comp_in:
-                                                new_all_lin = []
-                                                for qwe in all_lin:
-                                                    new_all_lin.append(qwe)
-                                                new_all_lin.append(outs[k][m])
+#                                             if outs[k][m] in to_comp_in:
+#                                                 new_all_lin = []
+#                                                 for qwe in all_lin:
+#                                                     new_all_lin.append(qwe)
+#                                                 new_all_lin.append(outs[k][m])
                                               
                                                 
                                                 
-                                                new_to_comp_out = to_comp_out
-                                                new_to_comp_in = ins[k]
+#                                                 new_to_comp_out = to_comp_out
+#                                                 new_to_comp_in = ins[k]
                                                 
-                                                all_candids.append((new_to_comp_in, new_to_comp_out, new_all_lin))
+#                                                 all_candids.append((new_to_comp_in, new_to_comp_out, new_all_lin))
                             
-                            if len(all_candids) == 0:
-                                # logging.error('ENTERED ALL CANDIDS 0')
+#                             if len(all_candids) == 0:
+#                                 # logging.error('ENTERED ALL CANDIDS 0')
                                 
-                                temp_res = res_ar[all_matched]    
-                                # logging.error('TEMP RES '+str(temp_res.shape))
-                                mind = np.argmin(np.sum(np.abs(est_coeffs_ar[all_matched] - orig_coeffs[m:m+1]),axis=-1))
-                                final_matched_list.append([all_matched[mind]])
-                                res = temp_res[mind]
+#                                 temp_res = res_ar[all_matched]    
+#                                 # logging.error('TEMP RES '+str(temp_res.shape))
+#                                 mind = np.argmin(np.sum(np.abs(est_coeffs_ar[all_matched] - orig_coeffs[m:m+1]),axis=-1))
+#                                 final_matched_list.append([all_matched[mind]])
+#                                 res = temp_res[mind]
          
-                                # logging.error('0 ALL CANDID RES '+str(res.shape))
-                            else:
-                                cand_lens=[]                
-                                for t in range(len(all_candids)):
-                                    cand_lens.append(len(all_candids[t][2]))
+#                                 # logging.error('0 ALL CANDID RES '+str(res.shape))
+#                             else:
+#                                 cand_lens=[]                
+#                                 for t in range(len(all_candids)):
+#                                     cand_lens.append(len(all_candids[t][2]))
                                     
-                                longest = np.argmax(np.array(cand_lens))
+#                                 longest = np.argmax(np.array(cand_lens))
                                     
-                                sel_curves = all_candids[longest][2]
+#                                 sel_curves = all_candids[longest][2]
                                 
-                                sel_curves.append(all_candids[longest][0][0])
-                                sel_curves.append(all_candids[longest][1][0])
+#                                 sel_curves.append(all_candids[longest][0][0])
+#                                 sel_curves.append(all_candids[longest][1][0])
                                     
-                                sel_coefs = res_ar[sel_curves]
+#                                 sel_coefs = res_ar[sel_curves]
                                 
-                                start_points = sel_coefs[:,0]
-                                end_points = sel_coefs[:,-1]
+#                                 start_points = sel_coefs[:,0]
+#                                 end_points = sel_coefs[:,-1]
                                 
-                                exp_start = np.expand_dims(start_points,axis=1)
-                                exp_end = np.expand_dims(end_points,axis=0)
+#                                 exp_start = np.expand_dims(start_points,axis=1)
+#                                 exp_end = np.expand_dims(end_points,axis=0)
                                 
-                                start_end = np.sum(np.abs(exp_start - exp_end),axis=-1)
+#                                 start_end = np.sum(np.abs(exp_start - exp_end),axis=-1)
                                 
                                 
-                                ordered_set = []
-                                min_start = np.min(start_end,axis=-1)
-                                max_start_id = np.argmax(min_start)
-                                cur_ind = max_start_id
-                                ordered_set.append(max_start_id)
-                                for line in range(len(start_end)-1):
-                                    next_one = np.argmin(start_end[:,ordered_set[-1]])
-                                    if next_one not in ordered_set:
-                                        ordered_set.append(next_one)
-                                    else:
-                                        break
+#                                 ordered_set = []
+#                                 min_start = np.min(start_end,axis=-1)
+#                                 max_start_id = np.argmax(min_start)
+#                                 cur_ind = max_start_id
+#                                 ordered_set.append(max_start_id)
+#                                 for line in range(len(start_end)-1):
+#                                     next_one = np.argmin(start_end[:,ordered_set[-1]])
+#                                     if next_one not in ordered_set:
+#                                         ordered_set.append(next_one)
+#                                     else:
+#                                         break
                                     
                                 
-#                                    logging.error('ORDERED SET ' + str(ordered_set))
-                                picked_merged = []
-                                for k in range(len(ordered_set)):
+# #                                    logging.error('ORDERED SET ' + str(ordered_set))
+#                                 picked_merged = []
+#                                 for k in range(len(ordered_set)):
                                     
-                                    picked_merged.append(out['merged_interpolated_points'][ordered_set[k]])
+#                                     picked_merged.append(out['merged_interpolated_points'][ordered_set[k]])
                                 
-                                final_matched_list.append(ordered_set)
+#                                 final_matched_list.append(ordered_set)
                                 
                                 
-                                concatted = np.concatenate(picked_merged, axis=0)
+#                                 concatted = np.concatenate(picked_merged, axis=0)
                                 
-#                               
-                                fitted_coeffs = bezier.fit_bezier(concatted, 3)[0]
+# #                               
+#                                 fitted_coeffs = bezier.fit_bezier(concatted, 3)[0]
                                 
                                                               
-                                res = bezier.interpolate_bezier(fitted_coeffs, n_int=res_ar.shape[1])
+#                                 res = bezier.interpolate_bezier(fitted_coeffs, n_int=res_ar.shape[1])
                                 
-                            sel_candids.append(np.copy(res))
+#                             sel_candids.append(np.copy(res))
                             
-                        sel_ar = np.array(sel_candids)
+#                         sel_ar = np.array(sel_candids)
                         
-                    else:
-                        res_ar = np.array(out['interpolated_points'])
-                        sel_candids=[]
-                        for m in range(len(haus_gt)):
+#                     else:
+#                         res_ar = np.array(out['interpolated_points'])
+#                         sel_candids=[]
+#                         for m in range(len(haus_gt)):
                             
-                            all_matched = ara[m]
-                            if len(all_matched) == 0:
+#                             all_matched = ara[m]
+#                             if len(all_matched) == 0:
                                 
-                                # logging.error('NOTHING MATCHED')
+#                                 # logging.error('NOTHING MATCHED')
                                 
-#                                res= -10*np.ones_like(haus_gt[0])   
-#                                sel_candids.append(np.copy(res))
-#                                non_matched_list.append(m)
-                                continue
-                            temp_res = res_ar[all_matched]    
-                                # logging.error('TEMP RES '+str(temp_res.shape))
-                            mind = np.argmin(np.sum(np.abs(est_coeffs_ar[all_matched] - orig_coeffs[m:m+1]),axis=-1))
-                            final_matched_list.append([all_matched[mind]])
-                            res = temp_res[mind]
+# #                                res= -10*np.ones_like(haus_gt[0])   
+# #                                sel_candids.append(np.copy(res))
+# #                                non_matched_list.append(m)
+#                                 continue
+#                             temp_res = res_ar[all_matched]    
+#                                 # logging.error('TEMP RES '+str(temp_res.shape))
+#                             mind = np.argmin(np.sum(np.abs(est_coeffs_ar[all_matched] - orig_coeffs[m:m+1]),axis=-1))
+#                             final_matched_list.append([all_matched[mind]])
+#                             res = temp_res[mind]
      
-                            sel_candids.append(np.copy(res))
-                        sel_ar = np.array(sel_candids)
-                else:
-                    res_ar = np.array(out['interpolated_points'])
-                    sel_candids=[]
-                    for m in range(len(haus_gt)):
+#                             sel_candids.append(np.copy(res))
+#                         sel_ar = np.array(sel_candids)
+#                 else:
+#                     res_ar = np.array(out['interpolated_points'])
+#                     sel_candids=[]
+#                     for m in range(len(haus_gt)):
                         
-                        all_matched = ara[m]
-                        if len(all_matched) == 0:
+#                         all_matched = ara[m]
+#                         if len(all_matched) == 0:
                             
-                            # logging.error('NOTHING MATCHED')
+#                             # logging.error('NOTHING MATCHED')
                             
-#                                res= -10*np.ones_like(haus_gt[0])   
-#                                sel_candids.append(np.copy(res))
-#                            non_matched_list.append(m)
-                            continue
-                        temp_res = res_ar[all_matched]    
-                            # logging.error('TEMP RES '+str(temp_res.shape))
-                        mind = np.argmin(np.sum(np.abs(est_coeffs_ar[all_matched] - orig_coeffs[m:m+1]),axis=-1))
-                        final_matched_list.append([all_matched[mind]])
-                        res = temp_res[mind]
+# #                                res= -10*np.ones_like(haus_gt[0])   
+# #                                sel_candids.append(np.copy(res))
+# #                            non_matched_list.append(m)
+#                             continue
+#                         temp_res = res_ar[all_matched]    
+#                             # logging.error('TEMP RES '+str(temp_res.shape))
+#                         mind = np.argmin(np.sum(np.abs(est_coeffs_ar[all_matched] - orig_coeffs[m:m+1]),axis=-1))
+#                         final_matched_list.append([all_matched[mind]])
+#                         res = temp_res[mind]
  
-                        sel_candids.append(np.copy(res))
-                    sel_ar = np.array(sel_candids)
+#                         sel_candids.append(np.copy(res))
+#                     sel_ar = np.array(sel_candids)
                     
                     
                     
-                # logging.error('SEL AR ' + str(sel_ar.shape))
+#                 # logging.error('SEL AR ' + str(sel_ar.shape))
                 
-                if len(sel_ar) > 0:
+#                 if len(sel_ar) > 0:
                 
-                    n_points = res_ar.shape[1]
-                    upper = np.stack([np.linspace(0,1,n_points), np.zeros((n_points))],axis=-1)
+#                     n_points = res_ar.shape[1]
+#                     upper = np.stack([np.linspace(0,1,n_points), np.zeros((n_points))],axis=-1)
                     
-                    left = np.stack([ np.zeros((n_points)),np.linspace(0,1,n_points)],axis=-1)
-                    right = np.stack([np.ones((n_points)),np.linspace(0,1,n_points)],axis=-1)
+#                     left = np.stack([ np.zeros((n_points)),np.linspace(0,1,n_points)],axis=-1)
+#                     right = np.stack([np.ones((n_points)),np.linspace(0,1,n_points)],axis=-1)
                     
-                    bev_left = np.stack([np.linspace(0,0.54,n_points), np.linspace(30/200,1,n_points)],axis=-1)
+#                     bev_left = np.stack([np.linspace(0,0.54,n_points), np.linspace(30/200,1,n_points)],axis=-1)
                     
-                    bev_right = np.stack([np.linspace(0.46,1,n_points), np.linspace(1,30/200,n_points)],axis=-1)
+#                     bev_right = np.stack([np.linspace(0.46,1,n_points), np.linspace(1,30/200,n_points)],axis=-1)
                     
-                    boundaries = np.stack([upper,  left, right, bev_left, bev_right],axis=0)
+#                     boundaries = np.stack([upper,  left, right, bev_left, bev_right],axis=0)
                     
-                    sel_ar = np.concatenate([sel_ar, boundaries],axis=0)
+#                     sel_ar = np.concatenate([sel_ar, boundaries],axis=0)
                     
-                    self.last_sel_ar = np.copy(sel_ar)
+#                     self.last_sel_ar = np.copy(sel_ar)
                     
-                    # logging.error('FINAL MATCHED LIST ' + str(final_matched_list))
+#                     # logging.error('FINAL MATCHED LIST ' + str(final_matched_list))
                     
-                    fin_list = []
-                    for k in range(len(final_matched_list)):
-                        for m in range(len(final_matched_list[k])):
-                            fin_list.append(final_matched_list[k][m])
+#                     fin_list = []
+#                     for k in range(len(final_matched_list)):
+#                         for m in range(len(final_matched_list[k])):
+#                             fin_list.append(final_matched_list[k][m])
                     
-                    # logging.error('FIN LIST ' + str(fin_list))
+#                     # logging.error('FIN LIST ' + str(fin_list))
                     
-                    non_used = np.setdiff1d(np.arange(len(res_ar)), np.array(fin_list))
+#                     non_used = np.setdiff1d(np.arange(len(res_ar)), np.array(fin_list))
                     
-                    base_sel_ar = np.copy(sel_ar)
+#                     base_sel_ar = np.copy(sel_ar)
                     
-                    exp_res_ar = np.expand_dims(np.expand_dims(sel_ar, axis=1), axis=0)
-                    other_exp_res_ar = np.expand_dims(np.expand_dims(sel_ar, axis=2), axis=1)
+#                     exp_res_ar = np.expand_dims(np.expand_dims(sel_ar, axis=1), axis=0)
+#                     other_exp_res_ar = np.expand_dims(np.expand_dims(sel_ar, axis=2), axis=1)
                     
-                    dist_mat = np.sum(np.abs(exp_res_ar - other_exp_res_ar),axis=-1)
+#                     dist_mat = np.sum(np.abs(exp_res_ar - other_exp_res_ar),axis=-1)
                 
                     
-                    dia_mask = np.tile(np.expand_dims(np.expand_dims(np.eye(len(dist_mat)),axis=-1),axis=-1),[1,1,dist_mat.shape[2],dist_mat.shape[3]])
-                    dist_mat = dist_mat * (1-dia_mask) + dia_mask * (dist_mat + 5)
+#                     dia_mask = np.tile(np.expand_dims(np.expand_dims(np.eye(len(dist_mat)),axis=-1),axis=-1),[1,1,dist_mat.shape[2],dist_mat.shape[3]])
+#                     dist_mat = dist_mat * (1-dia_mask) + dia_mask * (dist_mat + 5)
                     
-                    min_dist = np.min(dist_mat,axis=-1)
+#                     min_dist = np.min(dist_mat,axis=-1)
                     
-                    threshed_dist = min_dist < 0.01
+#                     threshed_dist = min_dist < 0.01
                     
             
                     
-                    est_intersection_list = []
+#                     est_intersection_list = []
                     
-                    for k in range(len(threshed_dist)):
-                        cur_list = []
-                        inter_so_far = []
-                        # logging.error('EST REF CURVE ' + str(k))
-                        for m in range(threshed_dist.shape[-1]):
-                            if np.any(threshed_dist[k,:,m]):
-                                # logging.error('GT REF CURVE ' + str(m))
-                                temp = np.where(threshed_dist[k,:,m])[0]
+#                     for k in range(len(threshed_dist)):
+#                         cur_list = []
+#                         inter_so_far = []
+#                         # logging.error('EST REF CURVE ' + str(k))
+#                         for m in range(threshed_dist.shape[-1]):
+#                             if np.any(threshed_dist[k,:,m]):
+#                                 # logging.error('GT REF CURVE ' + str(m))
+#                                 temp = np.where(threshed_dist[k,:,m])[0]
                                 
-                                temp_temp=[]
-                                for n in range(len(temp)):
+#                                 temp_temp=[]
+#                                 for n in range(len(temp)):
                                     
-                                    # if temp[n] >= len(base_sel_ar):
-                                    #     cur_to = temp[n] + 200
-                                    # else:
-                                    cur_to = temp[n]
-                                    if not (cur_to in inter_so_far):
-                                        temp_temp.append(cur_to)
-                                        inter_so_far.append(cur_to)
-                                if len(temp_temp)>0:
-                                    cur_list.append(temp_temp)
+#                                     # if temp[n] >= len(base_sel_ar):
+#                                     #     cur_to = temp[n] + 200
+#                                     # else:
+#                                     cur_to = temp[n]
+#                                     if not (cur_to in inter_so_far):
+#                                         temp_temp.append(cur_to)
+#                                         inter_so_far.append(cur_to)
+#                                 if len(temp_temp)>0:
+#                                     cur_list.append(temp_temp)
                            
-                        est_intersection_list.append(cur_list)
+#                         est_intersection_list.append(cur_list)
                         
-                    self.last_est_intersection_list = est_intersection_list
+#                     self.last_est_intersection_list = est_intersection_list
                 
-                else:
-                    est_intersection_list = []
+#                 else:
+#                     est_intersection_list = []
                     
-                    for k in range(len(haus_gt)+5):
+#                     for k in range(len(haus_gt)+5):
                         
-                        est_intersection_list.append([])
+#                         est_intersection_list.append([])
                         
-                    self.last_est_intersection_list = est_intersection_list
+#                     self.last_est_intersection_list = est_intersection_list
                     
                     
-                # logging.error('ORDER EST INTER SIZE ' + str(len(est_intersection_list)))
+#                 # logging.error('ORDER EST INTER SIZE ' + str(len(est_intersection_list)))
                 
-                '''
-                GT INTERSECTIONS
-                '''
+#                 '''
+#                 GT INTERSECTIONS
+#                 '''
                 
-                # n_points = res_ar.shape[1]
+#                 # n_points = res_ar.shape[1]
                 
                 
                     
-                res_ar = np.array(haus_gt)
-                n_points = res_ar.shape[1]
-                upper = np.stack([np.linspace(0,1,n_points), np.zeros((n_points))],axis=-1)
+#                 res_ar = np.array(haus_gt)
+#                 n_points = res_ar.shape[1]
+#                 upper = np.stack([np.linspace(0,1,n_points), np.zeros((n_points))],axis=-1)
                 
-                left = np.stack([ np.zeros((n_points)),np.linspace(0,1,n_points)],axis=-1)
-                right = np.stack([np.ones((n_points)),np.linspace(0,1,n_points)],axis=-1)
+#                 left = np.stack([ np.zeros((n_points)),np.linspace(0,1,n_points)],axis=-1)
+#                 right = np.stack([np.ones((n_points)),np.linspace(0,1,n_points)],axis=-1)
                 
-                bev_left = np.stack([np.linspace(0,0.54,n_points), np.linspace(30/200,1,n_points)],axis=-1)
+#                 bev_left = np.stack([np.linspace(0,0.54,n_points), np.linspace(30/200,1,n_points)],axis=-1)
                 
-                bev_right = np.stack([np.linspace(0.46,1,n_points), np.linspace(1,30/200,n_points)],axis=-1)
+#                 bev_right = np.stack([np.linspace(0.46,1,n_points), np.linspace(1,30/200,n_points)],axis=-1)
                 
-                boundaries = np.stack([upper,  left, right, bev_left, bev_right],axis=0)
+#                 boundaries = np.stack([upper,  left, right, bev_left, bev_right],axis=0)
                 
                 
-                res_ar = np.concatenate([res_ar, boundaries],axis=0)
-                self.last_gt_res_ar = np.copy(res_ar)
+#                 res_ar = np.concatenate([res_ar, boundaries],axis=0)
+#                 self.last_gt_res_ar = np.copy(res_ar)
                 
-                # logging.error('GT RES AR '+ str(self.last_gt_res_ar.shape))
+#                 # logging.error('GT RES AR '+ str(self.last_gt_res_ar.shape))
                 
-                exp_res_ar = np.expand_dims(np.expand_dims(res_ar, axis=1), axis=0)
-                other_exp_res_ar = np.expand_dims(np.expand_dims(res_ar, axis=2), axis=1)
+#                 exp_res_ar = np.expand_dims(np.expand_dims(res_ar, axis=1), axis=0)
+#                 other_exp_res_ar = np.expand_dims(np.expand_dims(res_ar, axis=2), axis=1)
                 
-                dist_mat = np.sum(np.abs(exp_res_ar - other_exp_res_ar),axis=-1)
+#                 dist_mat = np.sum(np.abs(exp_res_ar - other_exp_res_ar),axis=-1)
                 
-                # logging.error('GT DIST MAT '+ str(dist_mat.shape))
+#                 # logging.error('GT DIST MAT '+ str(dist_mat.shape))
                 
-                dia_mask = np.tile(np.expand_dims(np.expand_dims(np.eye(len(dist_mat)),axis=-1),axis=-1),[1,1,dist_mat.shape[2],dist_mat.shape[3]])
+#                 dia_mask = np.tile(np.expand_dims(np.expand_dims(np.eye(len(dist_mat)),axis=-1),axis=-1),[1,1,dist_mat.shape[2],dist_mat.shape[3]])
                 
-                # logging.error('GT DIA MASK '+ str(dia_mask.shape))
-                dist_mat = dist_mat * (1-dia_mask) + dia_mask * (dist_mat + 5)
+#                 # logging.error('GT DIA MASK '+ str(dia_mask.shape))
+#                 dist_mat = dist_mat * (1-dia_mask) + dia_mask * (dist_mat + 5)
                 
-                min_dist = np.min(dist_mat,axis=-1)
+#                 min_dist = np.min(dist_mat,axis=-1)
                 
-                threshed_dist = min_dist < 0.01
+#                 threshed_dist = min_dist < 0.01
                 
-                # trans_thresh_dist = np.transpose(threshed_dist,(0,2,1))
+#                 # trans_thresh_dist = np.transpose(threshed_dist,(0,2,1))
                 
-                # logging.error('TRANS GT THRESH DIST ' + str(trans_thresh_dist.shape))
+#                 # logging.error('TRANS GT THRESH DIST ' + str(trans_thresh_dist.shape))
                 
-                # wher_res = np.where(trans_thresh_dist)
-                total_intersection_count = 0
-                gt_intersection_list = []
+#                 # wher_res = np.where(trans_thresh_dist)
+#                 total_intersection_count = 0
+#                 gt_intersection_list = []
                 
-                for k in range(len(threshed_dist)):
-                    cur_list = []
-                    inter_so_far = []
-                    # logging.error('GT REF CURVE ' + str(k))
-                    for m in range(threshed_dist.shape[-1]):
-                        if np.any(threshed_dist[k,:,m]):
-                            # logging.error('GT CANDIDATE POINT ' + str(m))
-                            temp = np.where(threshed_dist[k,:,m])[0]
+#                 for k in range(len(threshed_dist)):
+#                     cur_list = []
+#                     inter_so_far = []
+#                     # logging.error('GT REF CURVE ' + str(k))
+#                     for m in range(threshed_dist.shape[-1]):
+#                         if np.any(threshed_dist[k,:,m]):
+#                             # logging.error('GT CANDIDATE POINT ' + str(m))
+#                             temp = np.where(threshed_dist[k,:,m])[0]
                             
-                            # logging.error('TEMP ' + str(temp))
+#                             # logging.error('TEMP ' + str(temp))
                             
-                            temp_temp=[]
-                            for n in range(len(temp)):
-                                if not (temp[n] in inter_so_far):
-                                    temp_temp.append(temp[n])
-                                    inter_so_far.append(temp[n])
+#                             temp_temp=[]
+#                             for n in range(len(temp)):
+#                                 if not (temp[n] in inter_so_far):
+#                                     temp_temp.append(temp[n])
+#                                     inter_so_far.append(temp[n])
                                     
-                                    total_intersection_count = total_intersection_count+1
-                            if len(temp_temp)>0:
-                                cur_list.append(temp_temp)
-                            # logging.error('CUR LIST ' + str(cur_list))
-                    gt_intersection_list.append(cur_list)
+#                                     total_intersection_count = total_intersection_count+1
+#                             if len(temp_temp)>0:
+#                                 cur_list.append(temp_temp)
+#                             # logging.error('CUR LIST ' + str(cur_list))
+#                     gt_intersection_list.append(cur_list)
                             
                     
-                    # gt_intersection_list.append(wher_res[2][wher_res[0] == k])
+#                     # gt_intersection_list.append(wher_res[2][wher_res[0] == k])
                     
-                    # logging.error('GT INTERSEC ' + str(gt_intersection_list[-1]))
-                self.last_gt_intersection_list = gt_intersection_list
+#                     # logging.error('GT INTERSEC ' + str(gt_intersection_list[-1]))
+#                 self.last_gt_intersection_list = gt_intersection_list
                 
                 
                 
                 
-                '''
-                GT WITH ONLY MATCHED ONES
-                '''
-                indeed_matched_list = np.setdiff1d(np.arange(len(gt_intersection_list)-5),non_matched_gts)
-                # logging.error('INDEED MATCHED ' + str(indeed_matched_list))
+#                 '''
+#                 GT WITH ONLY MATCHED ONES
+#                 '''
+#                 indeed_matched_list = np.setdiff1d(np.arange(len(gt_intersection_list)-5),non_matched_gts)
+#                 # logging.error('INDEED MATCHED ' + str(indeed_matched_list))
                 
-                self.indeed_matched_list = indeed_matched_list
+#                 self.indeed_matched_list = indeed_matched_list
                 
-                res_ar = np.array(haus_gt)[indeed_matched_list]
-                n_points = res_ar.shape[1]
-                upper = np.stack([np.linspace(0,1,n_points), np.zeros((n_points))],axis=-1)
+#                 res_ar = np.array(haus_gt)[indeed_matched_list]
+#                 n_points = res_ar.shape[1]
+#                 upper = np.stack([np.linspace(0,1,n_points), np.zeros((n_points))],axis=-1)
                 
-                left = np.stack([ np.zeros((n_points)),np.linspace(0,1,n_points)],axis=-1)
-                right = np.stack([np.ones((n_points)),np.linspace(0,1,n_points)],axis=-1)
+#                 left = np.stack([ np.zeros((n_points)),np.linspace(0,1,n_points)],axis=-1)
+#                 right = np.stack([np.ones((n_points)),np.linspace(0,1,n_points)],axis=-1)
                 
-                bev_left = np.stack([np.linspace(0,0.54,n_points), np.linspace(30/200,1,n_points)],axis=-1)
+#                 bev_left = np.stack([np.linspace(0,0.54,n_points), np.linspace(30/200,1,n_points)],axis=-1)
                 
-                bev_right = np.stack([np.linspace(0.46,1,n_points), np.linspace(1,30/200,n_points)],axis=-1)
+#                 bev_right = np.stack([np.linspace(0.46,1,n_points), np.linspace(1,30/200,n_points)],axis=-1)
                 
-                boundaries = np.stack([upper,  left, right, bev_left, bev_right],axis=0)
+#                 boundaries = np.stack([upper,  left, right, bev_left, bev_right],axis=0)
                 
                 
-                res_ar = np.concatenate([res_ar, boundaries],axis=0)
-                self.last_calc_gt_res_ar = np.copy(res_ar)
+#                 res_ar = np.concatenate([res_ar, boundaries],axis=0)
+#                 self.last_calc_gt_res_ar = np.copy(res_ar)
                 
-                # logging.error('GT RES AR '+ str(self.last_gt_res_ar.shape))
+#                 # logging.error('GT RES AR '+ str(self.last_gt_res_ar.shape))
                 
-                exp_res_ar = np.expand_dims(np.expand_dims(res_ar, axis=1), axis=0)
-                other_exp_res_ar = np.expand_dims(np.expand_dims(res_ar, axis=2), axis=1)
+#                 exp_res_ar = np.expand_dims(np.expand_dims(res_ar, axis=1), axis=0)
+#                 other_exp_res_ar = np.expand_dims(np.expand_dims(res_ar, axis=2), axis=1)
                 
-                dist_mat = np.sum(np.abs(exp_res_ar - other_exp_res_ar),axis=-1)
+#                 dist_mat = np.sum(np.abs(exp_res_ar - other_exp_res_ar),axis=-1)
                 
-                # logging.error('GT DIST MAT '+ str(dist_mat.shape))
+#                 # logging.error('GT DIST MAT '+ str(dist_mat.shape))
                 
-                dia_mask = np.tile(np.expand_dims(np.expand_dims(np.eye(len(dist_mat)),axis=-1),axis=-1),[1,1,dist_mat.shape[2],dist_mat.shape[3]])
+#                 dia_mask = np.tile(np.expand_dims(np.expand_dims(np.eye(len(dist_mat)),axis=-1),axis=-1),[1,1,dist_mat.shape[2],dist_mat.shape[3]])
                 
-                # logging.error('GT DIA MASK '+ str(dia_mask.shape))
-                dist_mat = dist_mat * (1-dia_mask) + dia_mask * (dist_mat + 5)
+#                 # logging.error('GT DIA MASK '+ str(dia_mask.shape))
+#                 dist_mat = dist_mat * (1-dia_mask) + dia_mask * (dist_mat + 5)
                 
-                min_dist = np.min(dist_mat,axis=-1)
+#                 min_dist = np.min(dist_mat,axis=-1)
                 
-                threshed_dist = min_dist < 0.01
+#                 threshed_dist = min_dist < 0.01
                 
-                # trans_thresh_dist = np.transpose(threshed_dist,(0,2,1))
+#                 # trans_thresh_dist = np.transpose(threshed_dist,(0,2,1))
                 
-                # logging.error('TRANS GT THRESH DIST ' + str(trans_thresh_dist.shape))
+#                 # logging.error('TRANS GT THRESH DIST ' + str(trans_thresh_dist.shape))
                 
-                # wher_res = np.where(trans_thresh_dist)
+#                 # wher_res = np.where(trans_thresh_dist)
                 
-                calc_gt_intersection_list = []
+#                 calc_gt_intersection_list = []
                 
-                for k in range(len(threshed_dist)):
-                    cur_list = []
-                    inter_so_far = []
-                    # logging.error('GT REF CURVE ' + str(k))
-                    for m in range(threshed_dist.shape[-1]):
-                        if np.any(threshed_dist[k,:,m]):
-                            # logging.error('GT CANDIDATE POINT ' + str(m))
-                            temp = np.where(threshed_dist[k,:,m])[0]
+#                 for k in range(len(threshed_dist)):
+#                     cur_list = []
+#                     inter_so_far = []
+#                     # logging.error('GT REF CURVE ' + str(k))
+#                     for m in range(threshed_dist.shape[-1]):
+#                         if np.any(threshed_dist[k,:,m]):
+#                             # logging.error('GT CANDIDATE POINT ' + str(m))
+#                             temp = np.where(threshed_dist[k,:,m])[0]
                             
-                            # logging.error('TEMP ' + str(temp))
+#                             # logging.error('TEMP ' + str(temp))
                             
-                            temp_temp=[]
-                            for n in range(len(temp)):
-                                if not (temp[n] in inter_so_far):
-                                    temp_temp.append(temp[n])
-                                    inter_so_far.append(temp[n])
-                            if len(temp_temp)>0:
-                                cur_list.append(temp_temp)
-                            # logging.error('CUR LIST ' + str(cur_list))
-                    calc_gt_intersection_list.append(cur_list)
+#                             temp_temp=[]
+#                             for n in range(len(temp)):
+#                                 if not (temp[n] in inter_so_far):
+#                                     temp_temp.append(temp[n])
+#                                     inter_so_far.append(temp[n])
+#                             if len(temp_temp)>0:
+#                                 cur_list.append(temp_temp)
+#                             # logging.error('CUR LIST ' + str(cur_list))
+#                     calc_gt_intersection_list.append(cur_list)
                             
                     
-                    # gt_intersection_list.append(wher_res[2][wher_res[0] == k])
+#                     # gt_intersection_list.append(wher_res[2][wher_res[0] == k])
                     
-                    # logging.error('GT INTERSEC ' + str(gt_intersection_list[-1]))
-                self.last_calc_gt_intersection_list = calc_gt_intersection_list
+#                     # logging.error('GT INTERSEC ' + str(gt_intersection_list[-1]))
+#                 self.last_calc_gt_intersection_list = calc_gt_intersection_list
                 
                 
-                    # logging.error('ORDER GT INTER SIZE ' + str(len(gt_intersection_list[])))
-            '''
-            CALC PRE_RECALL
-            '''
-            if len(out['interpolated_points']) > 0:
+#                     # logging.error('ORDER GT INTER SIZE ' + str(len(gt_intersection_list[])))
+#             '''
+#             CALC PRE_RECALL
+#             '''
+#             if len(out['interpolated_points']) > 0:
                 
                 
-                to_store_dist=[]
-                edit_distances = []
-                all_compare_gts = []
-                # indeed_matched_list = np.setdiff1d(np.arange(len(gt_intersection_list)-5),non_matched_gts)
+#                 to_store_dist=[]
+#                 edit_distances = []
+#                 all_compare_gts = []
+#                 # indeed_matched_list = np.setdiff1d(np.arange(len(gt_intersection_list)-5),non_matched_gts)
                 
                 
                 
-                for k in range(len(calc_gt_intersection_list)):
+#                 for k in range(len(calc_gt_intersection_list)):
                     
-                    # if k in non_matched_gts:
-                    #     continue
+#                     # if k in non_matched_gts:
+#                     #     continue
                     
-                    if len(calc_gt_intersection_list[k]) == 0:
-                        to_store_dist.append(0)
-                        edit_distances.append(0)
+#                     if len(calc_gt_intersection_list[k]) == 0:
+#                         to_store_dist.append(0)
+#                         edit_distances.append(0)
                     
-                    else:
-                        all_specials = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't']
-                        cur_special_count = 0
-                        cur_specials_gt = []
-                        cur_specials_gt_pos = []
-                        to_compare_gt = []
-                        to_compare_est = []
-                        # logging.error('ORIG GT ' + str(gt_intersection_list[k]))
-                        for m in range(len(calc_gt_intersection_list[k])):
-                            if len(calc_gt_intersection_list[k][m]) > 1:
-                                for n in range(len(calc_gt_intersection_list[k][m])):
+#                     else:
+#                         all_specials = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't']
+#                         cur_special_count = 0
+#                         cur_specials_gt = []
+#                         cur_specials_gt_pos = []
+#                         to_compare_gt = []
+#                         to_compare_est = []
+#                         # logging.error('ORIG GT ' + str(gt_intersection_list[k]))
+#                         for m in range(len(calc_gt_intersection_list[k])):
+#                             if len(calc_gt_intersection_list[k][m]) > 1:
+#                                 for n in range(len(calc_gt_intersection_list[k][m])):
                                     
-                                    cur_specials_gt.append(calc_gt_intersection_list[k][m][n])
+#                                     cur_specials_gt.append(calc_gt_intersection_list[k][m][n])
                                 
-                                    cur_specials_gt_pos.append(cur_special_count)
+#                                     cur_specials_gt_pos.append(cur_special_count)
                                 
-                                to_compare_gt.append(all_specials[cur_special_count])
-                                cur_special_count = cur_special_count + 1
+#                                 to_compare_gt.append(all_specials[cur_special_count])
+#                                 cur_special_count = cur_special_count + 1
                             
-                            elif len(calc_gt_intersection_list[k][m]) > 0:
-                                to_compare_gt.append(calc_gt_intersection_list[k][m][0])
+#                             elif len(calc_gt_intersection_list[k][m]) > 0:
+#                                 to_compare_gt.append(calc_gt_intersection_list[k][m][0])
                             
-                            else:
+#                             else:
                                 
-                                continue
+#                                 continue
                             
-                        all_compare_gts.append(to_compare_gt)
-                        # logging.error('TO COMPARE GT ' + str(to_compare_gt))
+#                         all_compare_gts.append(to_compare_gt)
+#                         # logging.error('TO COMPARE GT ' + str(to_compare_gt))
                         
-                        # logging.error('ORIG EST ' + str(est_intersection_list[k]))
-                        # logging.error('CUR SPECIALS GT ' + str(cur_specials_gt))
-                        # logging.error('CUR SPECIALS GT POS ' + str(cur_specials_gt_pos))
-                        for m in range(len(est_intersection_list[k])):
-                            for n in range(len(est_intersection_list[k][m])):
-                                # any_special=False
-                                if est_intersection_list[k][m][n] in cur_specials_gt:
+#                         # logging.error('ORIG EST ' + str(est_intersection_list[k]))
+#                         # logging.error('CUR SPECIALS GT ' + str(cur_specials_gt))
+#                         # logging.error('CUR SPECIALS GT POS ' + str(cur_specials_gt_pos))
+#                         for m in range(len(est_intersection_list[k])):
+#                             for n in range(len(est_intersection_list[k][m])):
+#                                 # any_special=False
+#                                 if est_intersection_list[k][m][n] in cur_specials_gt:
                                     
-                                    sele_ind = np.array(cur_specials_gt) == est_intersection_list[k][m][n]
+#                                     sele_ind = np.array(cur_specials_gt) == est_intersection_list[k][m][n]
                                     
-                                    # logging.error('SELE IND ' + str(sele_ind))
+#                                     # logging.error('SELE IND ' + str(sele_ind))
                                     
-                                    to_add = int(np.array(cur_specials_gt_pos)[sele_ind][0])
+#                                     to_add = int(np.array(cur_specials_gt_pos)[sele_ind][0])
                                     
                                     
-                                    # logging.error('TO ADD BEFORE ' + str(to_add))
+#                                     # logging.error('TO ADD BEFORE ' + str(to_add))
                                     
-                                    # if len(to_add) > 1:
-                                    #     to_add = to_add[0]
+#                                     # if len(to_add) > 1:
+#                                     #     to_add = to_add[0]
                                     
-                                    # logging.error('TO ADD AFTER ONE ' + str(to_add))
-                                    # to_add = int(to_add[0])
-                                    # any_special=True
-                                    if all_specials[to_add] not in to_compare_est:
+#                                     # logging.error('TO ADD AFTER ONE ' + str(to_add))
+#                                     # to_add = int(to_add[0])
+#                                     # any_special=True
+#                                     if all_specials[to_add] not in to_compare_est:
                                         
-                                        to_compare_est.append(all_specials[to_add])
+#                                         to_compare_est.append(all_specials[to_add])
                                     
                                 
-                                else:
+#                                 else:
                                     
-                                    to_compare_est.append(est_intersection_list[k][m][n])
+#                                     to_compare_est.append(est_intersection_list[k][m][n])
                         
                         
-                        # logging.error('TO COMPARE EST ' + str(to_compare_est))
+#                         # logging.error('TO COMPARE EST ' + str(to_compare_est))
                         
                     
-                        sm = edit_distance.SequenceMatcher(a=to_compare_gt, b=to_compare_est)
-                        dist = sm.distance()
-                        # logging.error('DIST ' + str(dist))
-                        to_store_dist.append(np.copy(dist))
-                        edit_distances.append(np.copy(dist)/len(to_compare_gt))
+#                         sm = edit_distance.SequenceMatcher(a=to_compare_gt, b=to_compare_est)
+#                         dist = sm.distance()
+#                         # logging.error('DIST ' + str(dist))
+#                         to_store_dist.append(np.copy(dist))
+#                         edit_distances.append(np.copy(dist)/len(to_compare_gt))
                     
-                # logging.error('EDIT DISTANCES ' + str(edit_distances))
+#                 # logging.error('EDIT DISTANCES ' + str(edit_distances))
                     
-                for k in range(len(non_matched_gts)):
-                    edit_distances.append(2)
+#                 for k in range(len(non_matched_gts)):
+#                     edit_distances.append(2)
                 
-                self.order_dist.append(np.mean(edit_distances))
+#                 self.order_dist.append(np.mean(edit_distances))
                 
-                # logging.error('EDIT ' + str(np.mean(edit_distances)))
+#                 # logging.error('EDIT ' + str(np.mean(edit_distances)))
                 
-                self.to_store_dist = to_store_dist
+#                 self.to_store_dist = to_store_dist
                 
-                self.line_nums.append(len(haus_gt))
+#                 self.line_nums.append(len(haus_gt))
                 
-#                    vis_region = (1-targets['occ_mask'][-1].cpu().numpy())*targets['occ_mask'][0].cpu().numpy()
-                # logging.error('VIS REGION ' + str(vis_region.shape))
-#                    vis_pixels = np.sum(vis_region)
-#                    self.occ_nums.append(vis_pixels)
+# #                    vis_region = (1-targets['occ_mask'][-1].cpu().numpy())*targets['occ_mask'][0].cpu().numpy()
+#                 # logging.error('VIS REGION ' + str(vis_region.shape))
+# #                    vis_pixels = np.sum(vis_region)
+# #                    self.occ_nums.append(vis_pixels)
                 
                 
                 
-                self.intersection_nums.append(total_intersection_count)
-            else:
+#                 self.intersection_nums.append(total_intersection_count)
+#             else:
 
                 
-                self.order_dist.append(2)
-                self.to_store_dist = None
+#                 self.order_dist.append(2)
+#                 self.to_store_dist = None
             
-                self.line_nums.append(len(haus_gt))
+#                 self.line_nums.append(len(haus_gt))
                 
                 
-                self.intersection_nums.append(50)
+#                 self.intersection_nums.append(50)
                 
                 
-            time4 = time.time()
-            logging.error('ORDER ' + str(time4 - time3))
-            '''
-            RNN STUFF
-            '''
-            if rnn:
-                selected_order_estimates = out['selected_order_estimates']
-                double_selected_order_estimates = out['double_selected_order_estimates']
+#             time4 = time.time()
+#             logging.error('ORDER ' + str(time4 - time3))
+#             '''
+#             RNN STUFF
+#             '''
+#             if rnn:
+#                 selected_order_estimates = out['selected_order_estimates']
+#                 double_selected_order_estimates = out['double_selected_order_estimates']
                  
-                est_coefs = out['boxes']
+#                 est_coefs = out['boxes']
                 
-#                    logging.error('OUT BOXES ' + str(est_coefs.shape))
+# #                    logging.error('OUT BOXES ' + str(est_coefs.shape))
                 
-                orig_coefs = targets['control_points'].cpu().numpy()
-                orig_coefs = np.reshape(orig_coefs, (-1, int(orig_coefs.shape[-1]/2),2))
+#                 orig_coefs = targets['control_points'].cpu().numpy()
+#                 orig_coefs = np.reshape(orig_coefs, (-1, int(orig_coefs.shape[-1]/2),2))
                 
-                rnn_loss = np.mean(np.sum(np.abs(np.expand_dims(orig_coefs,axis=1) - np.expand_dims(est_coefs,axis=0)),axis=-1),axis=-1)
-                
-                
-                rnn_gt_indices, rnn_est_indices = linear_sum_assignment(rnn_loss)   
-                
-                self.rnn_gt_indices = rnn_gt_indices
-                self.rnn_est_indices = rnn_est_indices
+#                 rnn_loss = np.mean(np.sum(np.abs(np.expand_dims(orig_coefs,axis=1) - np.expand_dims(est_coefs,axis=0)),axis=-1),axis=-1)
                 
                 
-                # logging.error('RNN GT INDICES ' + str(rnn_gt_indices.shape))
+#                 rnn_gt_indices, rnn_est_indices = linear_sum_assignment(rnn_loss)   
                 
-#                    logging.error('RNN EST INDICES ' + str(rnn_est_indices))
-                
-                
-                # logging.error('DOUBLE SELECTED ORDER ESTIMATES ' + str(double_selected_order_estimates.shape))
-                
-                arranged_est = double_selected_order_estimates[:,rnn_est_indices]
-                
-                arranged_est = np.concatenate([arranged_est[:,:, :-5][:,:,rnn_est_indices],arranged_est[:,:, -5:]],axis=-1)
-                
-                # logging.error('CONFUSION ARRANGED EST ' + str(arranged_est.shape))
-                
-                # arranged_gt = double_selected_order_estimates[:,rnn_est_indices]
-                
-                # arranged_gt = np.concatenate([arranged_est[:,:, :100][:,:,rnn_est_indices],arranged_est[:,:, 100:]],axis=-1)
+#                 self.rnn_gt_indices = rnn_gt_indices
+#                 self.rnn_est_indices = rnn_est_indices
                 
                 
-                rnn_to_store_dist=[]
-                rnn_edit_distances = []
+#                 # logging.error('RNN GT INDICES ' + str(rnn_gt_indices.shape))
                 
-                all_rnn_to_compare_gt = []
-                all_rnn_to_compare_est = []
+# #                    logging.error('RNN EST INDICES ' + str(rnn_est_indices))
                 
-                to_run_index = np.min([len(rnn_gt_indices), len(rnn_est_indices)])
                 
-                if len(rnn_gt_indices) > len(rnn_est_indices):
-                    not_matched = np.setdiff1d(np.arange(len(orig_coefs)), rnn_gt_indices)
-                    for k in range(len(not_matched)):
+#                 # logging.error('DOUBLE SELECTED ORDER ESTIMATES ' + str(double_selected_order_estimates.shape))
+                
+#                 arranged_est = double_selected_order_estimates[:,rnn_est_indices]
+                
+#                 arranged_est = np.concatenate([arranged_est[:,:, :-5][:,:,rnn_est_indices],arranged_est[:,:, -5:]],axis=-1)
+                
+#                 # logging.error('CONFUSION ARRANGED EST ' + str(arranged_est.shape))
+                
+#                 # arranged_gt = double_selected_order_estimates[:,rnn_est_indices]
+                
+#                 # arranged_gt = np.concatenate([arranged_est[:,:, :100][:,:,rnn_est_indices],arranged_est[:,:, 100:]],axis=-1)
+                
+                
+#                 rnn_to_store_dist=[]
+#                 rnn_edit_distances = []
+                
+#                 all_rnn_to_compare_gt = []
+#                 all_rnn_to_compare_est = []
+                
+#                 to_run_index = np.min([len(rnn_gt_indices), len(rnn_est_indices)])
+                
+#                 if len(rnn_gt_indices) > len(rnn_est_indices):
+#                     not_matched = np.setdiff1d(np.arange(len(orig_coefs)), rnn_gt_indices)
+#                     for k in range(len(not_matched)):
                         
-                        rnn_to_store_dist.append(len(gt_intersection_list[not_matched[k]]))
-                        rnn_edit_distances.append(1)
+#                         rnn_to_store_dist.append(len(gt_intersection_list[not_matched[k]]))
+#                         rnn_edit_distances.append(1)
                         
                 
-                for k in range(to_run_index):
+#                 for k in range(to_run_index):
                     
-                    # logging.error('RNN EST ' + str(est_intersection_list[k]))
-                    # logging.error('CUR SPECIALS GT ' + str(cur_specials_gt))
-                    # logging.error('CUR SPECIALS GT POS ' + str(cur_specials_gt_pos))
-                    if len(gt_intersection_list[rnn_gt_indices[k]]) == 0:
-                        rnn_to_store_dist.append(0)
-                        rnn_edit_distances.append(0)
+#                     # logging.error('RNN EST ' + str(est_intersection_list[k]))
+#                     # logging.error('CUR SPECIALS GT ' + str(cur_specials_gt))
+#                     # logging.error('CUR SPECIALS GT POS ' + str(cur_specials_gt_pos))
+#                     if len(gt_intersection_list[rnn_gt_indices[k]]) == 0:
+#                         rnn_to_store_dist.append(0)
+#                         rnn_edit_distances.append(0)
                     
-                    else:
-                        cur_gt_inter = gt_intersection_list[rnn_gt_indices[k]]
-                        rnn_to_compare_gt = []
-                        rnn_to_compare_est = []
-#                            logging.error('ORIG GT ' + str(gt_intersection_list[rnn_gt_indices[k]]))
-                        for m in range(len(cur_gt_inter)):
-                            if len(cur_gt_inter[m]) > 0:
-                                for n in range(len(cur_gt_inter[m])):
-                                    cora = np.where(cur_gt_inter[m][n] == rnn_gt_indices)[0]
-                                    if len(cora) > 0:
+#                     else:
+#                         cur_gt_inter = gt_intersection_list[rnn_gt_indices[k]]
+#                         rnn_to_compare_gt = []
+#                         rnn_to_compare_est = []
+# #                            logging.error('ORIG GT ' + str(gt_intersection_list[rnn_gt_indices[k]]))
+#                         for m in range(len(cur_gt_inter)):
+#                             if len(cur_gt_inter[m]) > 0:
+#                                 for n in range(len(cur_gt_inter[m])):
+#                                     cora = np.where(cur_gt_inter[m][n] == rnn_gt_indices)[0]
+#                                     if len(cora) > 0:
                                         
-                                        rnn_to_compare_gt.append(cora[0])
-                                    else:
-                                        rnn_to_compare_gt.append(cur_gt_inter[m][n] + len(orig_coefs))
-                                        # continue
-                            else:
+#                                         rnn_to_compare_gt.append(cora[0])
+#                                     else:
+#                                         rnn_to_compare_gt.append(cur_gt_inter[m][n] + len(orig_coefs))
+#                                         # continue
+#                             else:
                                 
-                                continue
-#                            logging.error('RNN TO COMPARE GT ' + str(rnn_to_compare_gt))
+#                                 continue
+# #                            logging.error('RNN TO COMPARE GT ' + str(rnn_to_compare_gt))
                         
-                        # cur_est_inter = arranged_est[:,rnn_est_indices[k],:]
-                        cur_est_inter = arranged_est[:,k,:]
-                        for m in range(len(cur_est_inter)):
+#                         # cur_est_inter = arranged_est[:,rnn_est_indices[k],:]
+#                         cur_est_inter = arranged_est[:,k,:]
+#                         for m in range(len(cur_est_inter)):
                             
-                            sel_cur = np.argmax(cur_est_inter[m])
+#                             sel_cur = np.argmax(cur_est_inter[m])
                             
-                            if sel_cur == (cur_est_inter.shape[-1] - 1):
-                                break
-                            elif sel_cur in rnn_to_compare_est:
-                                continue
-                            else:
-                                rnn_to_compare_est.append(sel_cur)
+#                             if sel_cur == (cur_est_inter.shape[-1] - 1):
+#                                 break
+#                             elif sel_cur in rnn_to_compare_est:
+#                                 continue
+#                             else:
+#                                 rnn_to_compare_est.append(sel_cur)
                             
-#                            logging.error('RNN TO COMPARE EST ' + str(rnn_to_compare_est))
-#                            
+# #                            logging.error('RNN TO COMPARE EST ' + str(rnn_to_compare_est))
+# #                            
                     
-                        sm = edit_distance.SequenceMatcher(a=rnn_to_compare_gt, b=rnn_to_compare_est)
-                        dist = sm.distance()
-                        # logging.error('RNN DIST ' + str(dist))
-                        rnn_to_store_dist.append(np.copy(dist))
-                        rnn_edit_distances.append(np.copy(dist)/len(rnn_to_compare_gt))
+#                         sm = edit_distance.SequenceMatcher(a=rnn_to_compare_gt, b=rnn_to_compare_est)
+#                         dist = sm.distance()
+#                         # logging.error('RNN DIST ' + str(dist))
+#                         rnn_to_store_dist.append(np.copy(dist))
+#                         rnn_edit_distances.append(np.copy(dist)/len(rnn_to_compare_gt))
                         
-                        all_rnn_to_compare_gt.append(rnn_to_compare_gt)
-                        all_rnn_to_compare_est.append(rnn_to_compare_est)
+#                         all_rnn_to_compare_gt.append(rnn_to_compare_gt)
+#                         all_rnn_to_compare_est.append(rnn_to_compare_est)
                         
-                    # logging.error('RNN EDIT DISTANCES ' + str(rnn_edit_distances))
+#                     # logging.error('RNN EDIT DISTANCES ' + str(rnn_edit_distances))
                     
-                self.rnn_order_dist.append(np.mean(rnn_edit_distances))
+#                 self.rnn_order_dist.append(np.mean(rnn_edit_distances))
                 
-                self.rnn_to_store_dist = rnn_to_store_dist
+#                 self.rnn_to_store_dist = rnn_to_store_dist
                 
-                self.all_rnn_to_compare_gt = all_rnn_to_compare_gt
-                self.all_rnn_to_compare_est = all_rnn_to_compare_est
+#                 self.all_rnn_to_compare_gt = all_rnn_to_compare_gt
+#                 self.all_rnn_to_compare_est = all_rnn_to_compare_est
                 
             '''
             PRECISION-RECALL
@@ -1294,7 +1294,7 @@ class BinaryConfusionMatrix(object):
                 
                 
             time5 = time.time()
-            logging.error('F score ' + str(time5 - time4))
+            # logging.error('F score ' + str(time5 - time4))
                 
             '''
             MSE

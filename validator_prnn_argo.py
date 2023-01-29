@@ -31,7 +31,9 @@ def evaluate(dataloader, model,  postprocessors, confusion, config,args, thresh)
      model.eval()
    
      counter = 0
-     
+     my_save_list_prob = dict()
+    
+     my_save_list_coef = dict()
      logging.error('VALIDATION')
      # Iterate over dataset
      for i, batch in enumerate(tqdm(dataloader)):
@@ -82,16 +84,33 @@ def evaluate(dataloader, model,  postprocessors, confusion, config,args, thresh)
         outputs = model(seq_images,cuda_targets[0]['calib'], cuda_targets[0]['grid_sorted_control_points'], False, thresh=static_thresh,training=args.use_gt)
     
         out = vis_tools.get_selected_polylines(outputs , thresh = static_thresh)
-        poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots = vis_tools.get_polygons(out,  thresh = static_thresh)
-        out['my_blob_mat'] = blob_mat
+        
+        
+        temp_probs = np.ones((100,3))*(-10)
+        temp_probs[:len(out['boxes']),1] = 10
+        temp_probs[len(out['boxes']):,2] = 10
+        
+        logging.error('TEMP PROB ' + str(temp_probs.shape))
+        
+        my_save_list_prob[targets[0]['sample_token']] = np.expand_dims(temp_probs, axis=0)
+        
+        temp_coef = np.expand_dims(np.concatenate([np.reshape(out['boxes'],(len(out['boxes']), 6)),np.zeros((100-len(out['boxes']),6))], axis=0), axis=0) 
+        
+        logging.error('TEMP COEF ' + str(temp_coef.shape))
+        
+        my_save_list_coef[targets[0]['sample_token']] = temp_coef
+        
+        
+#        poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots = vis_tools.get_polygons(out,  thresh = static_thresh)
+#        out['my_blob_mat'] = blob_mat
         hausdorff_static_dist, hausdorff_static_idx, hausdorff_gt, out = vis_tools.hausdorff_match(out, targets[0])
  
         merged_hausdorff_static_dist, merged_hausdorff_static_idx, _ = vis_tools.merged_hausdorff_match(out, targets[0])
 
-        poly_stuff=(poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots)
-#        poly_stuff=(None,None,None,None,None)
+#        poly_stuff=(poly_centers, poly_one_hots, blob_mat, blob_ids, real_hots)
+        poly_stuff=(None,None,None,None,None)
         try:
-            confusion.update(out, None, hausdorff_gt, hausdorff_static_idx,merged_hausdorff_static_idx, None, None, targets[0],poly_stuff=poly_stuff, do_common_poly=True, polyline=True, do_polys=True)
+            confusion.update(out, None, hausdorff_gt, hausdorff_static_idx,merged_hausdorff_static_idx, None, None, targets[0],poly_stuff=poly_stuff, do_common_poly=False, polyline=True, do_polys=False)
         except Exception as e:
             logging.error('EXCEPTION IN CONFUSION ')
             logging.error(str(e))
@@ -101,7 +120,8 @@ def evaluate(dataloader, model,  postprocessors, confusion, config,args, thresh)
 #                                      gt_train=use_gt, common_poly=poly_stuff)
         
     
-            
+     np.save('/scratch_net/catweazle/cany/simplice/prnn_est_prob.npy', my_save_list_prob)
+     np.save('/scratch_net/catweazle/cany/simplice/prnn_est_coef.npy', my_save_list_coef)
         
         
      return confusion
@@ -120,7 +140,7 @@ def load_checkpoint(path, model):
         
         
         
-    model.load_state_dict(ckpt['model'],strict=True)
+    model.load_state_dict(ckpt['model'],strict=False)
   
 #
     logging.error('LOADED MY')
@@ -184,11 +204,11 @@ split_pe = False
 apply_bev_pe = False
 abs_bev = False
 
-use_gt = True
+use_gt = False
 
 only_bev_pe=False
 
-base_dir = '/scratch_net/catweazle/cany/TPLR'
+base_dir = '/scratch_net/catweazle/cany/simplice'
 
 intersection_mode = 'polygon'
 
@@ -200,7 +220,7 @@ def main():
     parser.add_argument('--resume', default= None, 
                         help='path to an experiment to resume')
     
-    parser.add_argument('--exp', default='/home/cany/TPLR/baseline/Experiments/mle.json', 
+    parser.add_argument('--exp', default='/home/cany/simplice-github/baseline/Experiments/mle.json', 
                         help='path to an experiment to resume')
    
     parser.add_argument('--use_gt', type=bool, default=use_gt,
@@ -392,8 +412,13 @@ def main():
     _,_,val_loader, val_dataset = data_factory.build_argoverse_dataloader(config,args, val=True)
 
 #
-    epoch, best_iou, iteration = load_checkpoint(os.path.join(base_dir,'final_ckpts', 'PRNN_MC_Argo.pth'),  model)
+    # epoch, best_iou, iteration = load_checkpoint(os.path.join(base_dir,'final_ckpts', 'PRNN_MC_Argo.pth'),  model)
+    
+#    epoch, best_iou, iteration = load_checkpoint(os.path.join(base_dir,'polyline_False', 'temp.pth'),  model)
 #        
+    
+    epoch, best_iou, iteration = load_checkpoint(os.path.join('/scratch_net/catweazle/cany/simplice/checkpoints/poly-base-False/polyrnn-base.pth'),
+                                  model)
     logging.error('LOADED MY CHECKPOINT')
     
     
