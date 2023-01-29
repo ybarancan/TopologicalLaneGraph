@@ -52,7 +52,7 @@ def process_sample(nuscenes, map_data, sample, config,centers,loc_dict, obj_dict
         sample_data = nuscenes.get('sample_data', sample['data'][camera])
         obj_entries, loc_array = process_sample_data(nuscenes, map_data, sample_data, lidar_pcl, config,centers,  output_seg_root, output_line_root)
         loc_dict.append_sample( loc_array, sample_data['token'])     
-        obj_dict.append_sample( obj_entries, sample_data['token'])     
+#        obj_dict.append_sample( obj_entries, sample_data['token'])     
 
 def process_sample_data(nuscenes, map_data, sample_data, lidar, config,centers,  output_seg_root, output_line_root):
 #    
@@ -63,12 +63,12 @@ def process_sample_data(nuscenes, map_data, sample_data, lidar, config,centers, 
 #                                         config.map_resolution)
 #    
     # Render dynamic object masks
-    obj_entries, obj_masks = nusc_utils.get_object_masks(nuscenes, 
-                                            sample_data, 
-                                            config.map_extents, 
-                                            config.map_resolution)
+#    obj_entries, obj_masks = nusc_utils.get_object_masks(nuscenes, 
+#                                            sample_data, 
+#                                            config.map_extents, 
+#                                            config.map_resolution)
 #    masks = np.concatenate([map_masks, obj_masks], axis=0)
-    masks = obj_masks
+#    masks = obj_masks
     # Ignore regions of the BEV which are outside the image
     sensor = nuscenes.get('calibrated_sensor', 
                           sample_data['calibrated_sensor_token'])
@@ -77,26 +77,26 @@ def process_sample_data(nuscenes, map_data, sample_data, lidar, config,centers, 
     vis_mask = get_visible_mask(intrinsics, sample_data['width'], 
                                config.map_extents, config.map_resolution)
     
-    masks[-1] = vis_mask
+#    masks[-1] = vis_mask
     
     
     # Transform lidar points into camera coordinates
-    cam_transform = nusc_utils.get_sensor_transform(nuscenes, sample_data)
-    cam_points = transform(np.linalg.inv(cam_transform), lidar)
+#    cam_transform = nusc_utils.get_sensor_transform(nuscenes, sample_data)
+#    cam_points = transform(np.linalg.inv(cam_transform), lidar)
     
-    occ_mask = np.uint8(~get_occlusion_mask(cam_points, config.map_extents,
-                                    config.map_resolution))
+#    occ_mask = np.uint8(~get_occlusion_mask(cam_points, config.map_extents,
+#                                    config.map_resolution))
     
     
-    masks[-1] = occ_mask*vis_mask
+#    masks[-1] = occ_mask*vis_mask
     
     # Encode masks as integer bitmask
-    labels = encode_binary_labels(masks)
+#    labels = encode_binary_labels(masks)
 
     # Save outputs to disk
-    output_path = os.path.join(output_seg_root,  
-                               sample_data['token'] + '.png')
-    Image.fromarray(labels.astype(np.int32), mode='I').save(output_path)
+#    output_path = os.path.join(output_seg_root,  
+#                               sample_data['token'] + '.png')
+#    Image.fromarray(labels.astype(np.int32), mode='I').save(output_path)
     
     img_centers, loc_array = nusc_utils.get_centerlines(nuscenes, centers, sample_data, config.map_extents, config.map_resolution, vis_mask)
     img_centers = np.flipud(img_centers)
@@ -105,7 +105,7 @@ def process_sample_data(nuscenes, map_data, sample_data, lidar, config,centers, 
     cv2.imwrite(os.path.join(output_line_root,sample_data['token'] + '.png'),img_centers)
     
     
-    return obj_entries, loc_array
+    return None, loc_array
 
 
 def load_map_data(dataroot, location):
@@ -262,7 +262,7 @@ if __name__ == '__main__':
         process_scene(nuscenes, map_data,my_map_apis, new_dict, scene, config, loc_dict, obj_dict, output_seg_root, output_line_root)
         
     np.save(config.loc_dict_path, loc_dict.get_res())
-    np.save(config.obj_dict_path, obj_dict.get_res())
+#    np.save(config.obj_dict_path, obj_dict.get_res())
 
 
 #
